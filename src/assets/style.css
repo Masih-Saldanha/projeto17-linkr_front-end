@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
+body{
+  background-color: #333333;
+
+  font-family: 'Lato', sans-serif;
+  /*font-family: 'Oswald', sans-serif;
+  font-family: 'Passion One', cursive;*/
+}
+
+strong {
+  font-weight: 700;
+}
+
+small {
+  font-weight: 300;
+}
+
+a {
+  text-decoration: none;
+}
+
+input:focus {
+  box-shadow: 0 0 0 0;
+  outline: 0;
+}
