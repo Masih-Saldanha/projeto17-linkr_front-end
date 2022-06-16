@@ -1,8 +1,12 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import styled from 'styled-components';
 
+import PostContext from '../../contexts/postContext';
+
 function PublishPost() {
+    const { getPosts } = useContext(PostContext);
+
     const [postData, setPostData] = useState({ description: "", link: "" });
     const [loading, setLoading] = useState(false);
 
@@ -13,12 +17,11 @@ function PublishPost() {
             return;
         }
         setLoading(true);
-        console.log(postData);
 
         const URL = "https://projeto17-linkr.herokuapp.com/posts";
         const promise = axios.post(URL, postData);
         promise.then(response => {
-            // ATIVAR FUNÇÃO DE GET POSTS AQUI
+            getPosts();
             setPostData({ description: "", link: "" });
             setLoading(false);
         });
@@ -27,18 +30,6 @@ function PublishPost() {
             setPostData({ description: "", link: "" });
             setLoading(false);
         });
-
-        // setLoading(true);
-        // console.log("carregando");
-        // setTimeout(() => {
-        //     console.log(postData);
-        //     setLoading(false);
-        //     console.log("não está mais carregando")
-        // }, 3000);
-
-        // FIXME: NO CATCH IMPLEMENTAR ALERT("Houve um erro ao publicar seu link") e
-        // setPostData({ description: "", link: "" })
-        // setLoading(false)
     }
 
     return (
@@ -89,6 +80,7 @@ position: relative;
 text-align: center;
 padding: 10px 15px 40px 15px;
 background-color: #FFFFFF;
+margin-bottom: 16px;
 h1 {
     font-family: Lato;
     font-style: normal;
