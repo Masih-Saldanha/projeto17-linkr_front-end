@@ -3,6 +3,7 @@ import { MdKeyboardArrowDown } from 'react-icons/md';
 
 function Header(props){
   
+  // FIXME: Creio que seria mais interessante usar Context ao invés de props aqui.
   const { pictureUrl, username } = props;
 
   return(
