@@ -6,7 +6,7 @@ import Hashtag from './../Hashtag';
 
 function Trending(){
 
-  const [hashtags, setHashtags] = useState ([]);
+  const [hashtags, setHashtags] = useState (['']);
 
   //TODO: persistir token
   const token = '';
@@ -35,14 +35,15 @@ function Trending(){
 }
 
 const Section = styled.section`
-  width: 300px;
-  min-height: 80px;
-  max-height: 100%;
+  min-width: 300px;
+  height: 100%;
   color: #fff;
   margin-left: 25px;
-  margin-top: 150px;
   background-color: #171717;
   border-radius: 16px;
+  position: sticky;
+  top: 210px;
+
 `;
 
 const Title = styled.div`
