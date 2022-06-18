@@ -51,7 +51,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/hashtag/:hashtag' element={<PostsByHashtag />} />
-          <Route path='/signin' element={<SignIn />} />
+          <Route path='/' element={<SignIn />} />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/timeline' element={<Home />} />
           <Route path='/user/:id' element={<UserPage />} />

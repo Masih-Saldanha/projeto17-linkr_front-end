@@ -1,4 +1,4 @@
-import {useNavigate, Link, useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import React, {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -17,11 +17,11 @@ export default function UserPage() {
     const [render, setRender] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    // const config = {
-    //     headers: {
-    //         'Authorization': `Bearer ${user.token}`
-    //     }
-    // };
+    const config = {
+        headers: {
+            'Authorization': `Bearer ${user.token}`
+        }
+    };
 
     useEffect(() => {
         const promise = axios.get(`${URL_API}/user/${id}`);
@@ -103,6 +103,51 @@ font-size: 33px;
 margin-top: 30vh;
 line-height: 49px;
 color: #FFFFFF;
+`
+
+const Link = styled.div`
+width: 100%;
+border: 1px solid #4D4D4D;
+border-radius: 11px;
+display: flex;
+justify-content: space-between;
+div {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  h3 {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  color: #CECECE;
+  }
+  h4 {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 9px;
+  line-height: 11px;
+  color: #9B9595;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  }
+  h5 {
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 9px;
+  line-height: 11px;
+  color: #CECECE;
+  }
+}
+img {
+  width: 95px;
+  height: 115px;
+  border-radius: 0px 12px 12px 0px;
+}
 `
 
 const HeadlineContainer = styled.div`
