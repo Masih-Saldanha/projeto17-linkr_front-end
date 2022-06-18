@@ -19,7 +19,20 @@ function PublishPost() {
         setLoading(true);
 
         const URL = "https://projeto17-linkr.herokuapp.com/posts";
-        const promise = axios.post(URL, postData);
+        const config = {
+            headers: {
+                // FIXME: ADICIONAR TOKEN AQUI
+                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJNYXNpaCIsImlhdCI6MTY1NTQ5MDM5NX0.XeWyPACGH3ygylWVkJA-pdIcepRSjk7qISI7a_oqiXo`
+            }
+        };
+        let metaPostData = {
+            description: postData.description,
+            link: postData.link
+        }
+        if (!postData.description) {
+            delete metaPostData.description;
+        }
+        const promise = axios.post(URL, metaPostData, config);
         promise.then(response => {
             getPosts();
             setPostData({ description: "", link: "" });
