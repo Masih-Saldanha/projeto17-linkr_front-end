@@ -6,6 +6,8 @@ import Home from './pages/Home';
 import UserPage from './pages/Home/UserPage';
 import PostContext from './contexts/postContext';
 
+import PostsByHashtag from './pages/PostsByHashtag';
+
 function App() {
   const [postList, setPostList] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
@@ -46,6 +48,7 @@ function App() {
     >
       <BrowserRouter>
         <Routes>
+          <Route path='/hashtag/:hashtag' element={<PostsByHashtag />} />
           <Route path='/timeline' element={<Home />} />
           <Route path='/user/:id' element={<UserPage />} />
         </Routes>
