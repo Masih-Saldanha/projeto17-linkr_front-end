@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import styled from 'styled-components';
-import {useNavigate, Link} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 import PublishPost from '../../components/PublishPost';
 import PostContext from '../../contexts/postContext';
