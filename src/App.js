@@ -1,14 +1,14 @@
 import { useState } from 'react';
+import { AuthProvider } from "./contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
-
 import Home from './pages/Home';
 import UserPage from './pages/Home/UserPage';
 import PostContext from './contexts/postContext';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
-
 import PostsByHashtag from './pages/PostsByHashtag';
+
 
 function App() {
   const [postList, setPostList] = useState([]);
@@ -40,6 +40,7 @@ function App() {
   }
 
   return (
+    <AuthProvider>
     <PostContext.Provider
       value={{
         postList,
@@ -58,6 +59,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </PostContext.Provider>
+    </AuthProvider>
   )
 }
 
