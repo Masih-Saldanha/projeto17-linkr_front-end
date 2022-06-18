@@ -46,9 +46,18 @@ export default function UserPage() {
                             <p>{post.likes} likes</p>
                         </PostLeftSide>
                         <PostRightSide>
-                            <h1>{userInfos.username}</h1>
+                        <h1>{userInfos.username}</h1>
                             <h2>{post.description}</h2>
-                            <href>{post.link}</href>
+                            <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
+                                <Link>
+                                    <div>
+                                        <h3>{post.link.linkTitle}</h3>
+                                        <h4>{post.link.linkDescription}</h4>
+                                        <h5>{post.link.linkUrl}</h5>
+                                    </div>
+                                    <img src={`${post.link.linkImage}`} />
+                                </Link>
+                            </a>
                         </PostRightSide>
                     </Post>
                 )
