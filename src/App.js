@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 
 import Home from './pages/Home';
+import UserPage from './pages/Home/UserPage';
 import PostContext from './contexts/postContext';
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
       setLoadingPosts(false);
     });
   }
+
   return (
     <PostContext.Provider
       value={{
@@ -37,6 +39,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/timeline' element={<Home />} />
+          <Route path='/user/:id' element={<UserPage />} />
         </Routes>
       </BrowserRouter>
     </PostContext.Provider>

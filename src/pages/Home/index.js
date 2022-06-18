@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import styled from 'styled-components';
+import {useNavigate, Link} from 'react-router-dom';
 
 import PublishPost from '../../components/PublishPost';
 import PostContext from '../../contexts/postContext';
@@ -9,6 +10,7 @@ import liked from './../../assets/heart.png';
 
 function Home() {
   const { postList, loadingPosts } = useContext(PostContext);
+  const navigate = useNavigate();
 
   function renderPosts() {
     if (loadingPosts) {
@@ -30,7 +32,7 @@ function Home() {
                 <p>{post.likes} likes</p>
               </PostLeftSide>
               <PostRightSide>
-                <h1>{post.username}</h1>
+                <h1 onClick={() => navigate(`/user/${post.userId}`)}>{post.username}</h1>
                 <h2>{post.description}</h2>
                 <href>{post.link}</href>
               </PostRightSide>
