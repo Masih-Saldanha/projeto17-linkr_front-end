@@ -97,7 +97,7 @@ function Home() {
               //     }
               //   }
               // ])
-              console.log(postList);
+              // console.log(postList);
             }}
           >timeline</TimelineTitle>
           <PublishPost></PublishPost>

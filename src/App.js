@@ -22,11 +22,13 @@ function App() {
     promise.then(response => {
       const { data } = response;
       setPostList(data);
+      console.log(postList);
       setLoadingPosts(false);
     });
     promise.catch(error => {
       const { response } = error;
       const { data } = response;
+      console.log(postList);
       alert("An error ocurred while trying to fetch the posts, please refresh the page");
       setLoadingPosts(false);
     });
