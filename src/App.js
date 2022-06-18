@@ -13,15 +13,23 @@ function App() {
   function getPosts() {
     setLoadingPosts(true);
     const URL = "https://projeto17-linkr.herokuapp.com/posts";
-    const promise = axios.get(URL);
+    const config = {
+      headers: {
+        // FIXME: ADICIONAR TOKEN AQUI
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJNYXNpaCIsImlhdCI6MTY1NTQ5MDM5NX0.XeWyPACGH3ygylWVkJA-pdIcepRSjk7qISI7a_oqiXo`
+      }
+    };
+    const promise = axios.get(URL, config);
     promise.then(response => {
       const { data } = response;
       setPostList(data);
+      console.log(postList);
       setLoadingPosts(false);
     });
     promise.catch(error => {
       const { response } = error;
       const { data } = response;
+      console.log(postList);
       alert("An error ocurred while trying to fetch the posts, please refresh the page");
       setLoadingPosts(false);
     });
