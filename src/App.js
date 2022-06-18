@@ -5,6 +5,10 @@ import axios from 'axios';
 import Home from './pages/Home';
 import UserPage from './pages/Home/UserPage';
 import PostContext from './contexts/postContext';
+import SignUp from './pages/SignUp';
+import SignIn from './pages/SignIn';
+
+import PostsByHashtag from './pages/PostsByHashtag';
 
 function App() {
   const [postList, setPostList] = useState([]);
@@ -46,6 +50,9 @@ function App() {
     >
       <BrowserRouter>
         <Routes>
+          <Route path='/hashtag/:hashtag' element={<PostsByHashtag />} />
+          <Route path='/signin' element={<SignIn />} />
+          <Route path='/signup' element={<SignUp />} />
           <Route path='/timeline' element={<Home />} />
           <Route path='/user/:id' element={<UserPage />} />
         </Routes>
