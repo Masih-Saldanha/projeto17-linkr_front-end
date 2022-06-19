@@ -7,12 +7,8 @@ import Hashtag from "./../Hashtag";
 
 
 function Trending() {
-  const [hashtags, setHashtags] = useState([""]);
+  const [hashtags, setHashtags] = useState([]);
   const { token } = useContext(AuthContext);
-
-  //TODO: persistir token
-  // const token =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJNYXNpaCIsImlhdCI6MTY1NTQ5MDM5NX0.XeWyPACGH3ygylWVkJA-pdIcepRSjk7qISI7a_oqiXo";
 
   useEffect(() => {
     const URL = "https://projeto17-linkr.herokuapp.com/hashtag/trending";
@@ -24,16 +20,17 @@ function Trending() {
 
     const promise = axios.get(URL, CONFIG);
 
-    promise.then((promise) => setHashtags([...promise.data]));
+    promise.then((promise) => {
+      setHashtags([...promise.data]);
+    });
     promise.catch((err) => console.log(err));
   }, []);
 
   return (
     <Section>
       <Title>trending</Title>
-      {hashtags?.map((tag, index) => (
-        <Hashtag key={index} hashtag={tag} />
-      ))}
+      {console.log(hashtags)}
+      { hashtags?.map((tag, index) => (<Hashtag key={index} hashtag={tag.hashtag} /> )) }
     </Section>
   );
 }
@@ -46,7 +43,7 @@ const Section = styled.section`
   background-color: #171717;
   border-radius: 16px;
   position: sticky;
-  top: 210px;
+  top: 160px;
 
   @media (max-width: 611px) {
     display: none;
