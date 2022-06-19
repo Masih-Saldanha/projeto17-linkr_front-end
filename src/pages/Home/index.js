@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { IoMdCreate, IoMdTrash } from 'react-icons/io';
@@ -8,6 +8,7 @@ import PublishPost from '../../components/PublishPost';
 import PostContext from '../../contexts/postContext';
 import Header from './../../components/Header';
 import { IoHeartOutline, IoHeart } from 'react-icons/io5';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const URL_API = `https://projeto17-linkr.herokuapp.com`;
 
@@ -15,16 +16,26 @@ function Home() {
 
   const navigate = useNavigate();
   const { postList, setPostList, getPosts, loadingPosts } = useContext(PostContext);
+  const { token } = useContext(AuthContext);
 
   async function insertLike(postId) {
+    //TODO: Não terminei a função
     await axios.post(`${URL_API}/like/${postId}`)
-    .then()
+    .then(response => {
+        console.log('Curitada dada');
+    }).catch(err => {
+        console.log('Erro', err);
+    })
   }
 
-  function defineParametersForLikeButton(likedByUser, state) {
-    if (likedByUser === true) {
-
-    }
+  async function deleteLike(postId) {
+    //TODO: Não terminei a função
+    await axios.delete(`${URL_API}/like/${postId}`)
+    .then(response => {
+        console.log('Curitada dada');
+    }).catch(err => {
+        console.log('Erro', err);
+    })
   }
 
   function renderPosts() {
@@ -39,17 +50,13 @@ function Home() {
     } else {
       return (
         postList.map((post, index) => {
-            // const [like, setLike] = useState(false);
           return (
             <Post key={index}>
               <PostLeftSide>
                 <UserPicture src={post.userPicture} />
                 {post.link.likedByUser === false ? <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>
-                 : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
-
-                <p>{post.likes 
-                // + count
-                } likes</p>
+                : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
+                <p>{post.likes} likes</p>
               </PostLeftSide>
               <PostRightSide>
                 <EditIcon><IoMdCreate /></EditIcon>
@@ -84,7 +91,7 @@ function Home() {
             onClick={() => {
               // AQUI É PARA TESTES FÁCEIS:
 
-              getPosts();
+              getPosts(token);
               // setPostList([
               //   {
               //     userPicture: "https://wallpapers.com/images/high/ashen-one-from-dark-souls-3-oja56fn40ay19u8u.jpg",

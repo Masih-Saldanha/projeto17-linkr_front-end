@@ -1,8 +1,9 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 
 import Hashtag from "./../Hashtag";
+
 
 function Trending() {
   const [hashtags, setHashtags] = useState([""]);
@@ -44,6 +45,10 @@ const Section = styled.section`
   border-radius: 16px;
   position: sticky;
   top: 210px;
+
+  @media (max-width: 611px) {
+    display: none;
+  }
 `;
 
 const Title = styled.div`
