@@ -12,8 +12,8 @@ import PostComponent from './PostComponent';
 const URL_API = `http://localhost:4000`;
 
 export default function UserPage() {
-
-    const navigate = useNavigate();
+    const [toggle, setToggle] = useState(false);
+    const navigate = useNavigate(); 
     const {id} = useParams();
     const [userInfos, setUserInfos] = useState({});
     const [render, setRender] = useState(false);
@@ -62,7 +62,7 @@ export default function UserPage() {
     :
     (
     <>
-      <Header />
+      <Header toggle={toggle} setToggle={setToggle} />
       <Main>
         <Timeline>
             <HeadlineContainer>

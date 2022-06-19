@@ -13,7 +13,8 @@ import { AuthContext } from '../../contexts/AuthContext';
 const URL_API = `https://projeto17-linkr.herokuapp.com`;
 
 function Home() {
-
+  const [toggle, setToggle] = useState(false);
+  
   const navigate = useNavigate();
   const { postList, setPostList, getPosts, loadingPosts } = useContext(PostContext);
   const { token } = useContext(AuthContext);
@@ -63,7 +64,7 @@ function Home() {
 
   return (
     <>
-      <Header />
+      <Header toggle={toggle} setToggle={setToggle} />
       <Main>
         {/* FIXME: AQUI ENTRAR A SIDE COM HASHTAGS */}
         <Timeline>
