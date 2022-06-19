@@ -55,8 +55,7 @@ function Home() {
               <PostLeftSide>
                 <UserPicture src={post.userPicture} />
                 {post.link.likedByUser === false ? <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>
-                 : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
-
+                : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
                 <p>{post.likes} likes</p>
               </PostLeftSide>
               <PostRightSide>
