@@ -1,17 +1,50 @@
 import styled from 'styled-components';
+import { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
+
 import { MdKeyboardArrowDown } from 'react-icons/md';
+import { AuthContext } from '../../contexts/AuthContext';
 
-function Header(props){
-  
+function Header(props) {
+
   // FIXME: Creio que seria mais interessante usar Context ao invés de props aqui.
-  const { pictureUrl, username } = props;
+  const {
+    // pictureUrl, 
+    username
+  } = props;
 
-  return(
+  const [userPicture, setUserPicture] = useState("");
+  const { token } = useContext(AuthContext);
+
+  useEffect(() => {
+    getUserPicture();
+  }, []);
+
+  function getUserPicture() {
+    // ta feio assim pra evitar conflito no back com /user/:id
+    const URL = "https://projeto17-linkr.herokuapp.com/picture/user";
+    const config = {
+      headers: {
+        // FIXME: ADICIONAR TOKEN AQUI
+        Authorization: `Bearer ${token}`
+      }
+    };
+    const promise = axios.get(URL, config);
+    promise.then(response => {
+      const { data } = response;
+      setUserPicture(data.pictureUrl);
+    });
+    promise.catch(error => {
+      alert("Houve um erro ao buscar a foto do usuário!");
+    });
+  }
+
+  return (
     <Section>
       <Span>linkr</Span>
       <Div>
-        <Icon><MdKeyboardArrowDown/></Icon>
-        <img src={pictureUrl} alt={username}/>
+        <Icon><MdKeyboardArrowDown /></Icon>
+        <img src={userPicture} alt={username} />
       </Div>
     </Section>
   )
