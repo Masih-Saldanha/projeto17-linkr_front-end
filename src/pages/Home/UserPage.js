@@ -2,13 +2,14 @@ import {useNavigate, useParams} from 'react-router-dom';
 import React, {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
-import { IoHeartOutline } from 'react-icons/io5';
 
 import Header from './../../components/Header';
 import { AuthContext } from '../../contexts/AuthContext';
 import Trending from '../../components/Trending';
+import PostComponent from './PostComponent';
 
-const URL_API = `https://projeto17-linkr.herokuapp.com`;
+// const URL_API = `https://projeto17-linkr.herokuapp.com`;
+const URL_API = `http://localhost:4000`;
 
 export default function UserPage() {
 
@@ -39,61 +40,15 @@ export default function UserPage() {
         })
     }, [render]);
 
-    function defineParametersForLikeButton(likedByUser, postId) {
-        if (likedByUser === true) {
-            return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
-        } else {
-            return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked'/>;
-        }
-    }
-    //TODO: preciso terminar a lógica de inserir o like no front depois de ter feito a requisição
-    async function insertLike(postId) {
-        //TODO: Não terminei a função
-        await axios.post(`${URL_API}/like/${postId}`)
-        .then(response => {
-            console.log('Curitada dada');
-        }).catch(err => {
-            console.log('Erro', err);
-        })
-      }
-    
-      async function deleteLike(postId) {
-        //TODO: Não terminei a função
-        await axios.delete(`${URL_API}/like/${postId}`)
-        .then(response => {
-            console.log('Curitada dada');
-        }).catch(err => {
-            console.log('Erro', err);
-        })
-      }
-
-    //TODO: Ajustar o layout
     function renderPosts() {
         const {posts} = userInfos;
+        console.log('Entrou na renderPosts');
         return (
             posts.map((post, index) => {
                 return (
-                    <Post key={index}>
-                        <PostLeftSide>
-                            <UserPicture src={userInfos.pictureUrl} />
-                            {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
-                            <p>{post.likes} likes</p>
-                        </PostLeftSide>
-                        <PostRightSide>
-                        <h1>{userInfos.username}</h1>
-                            <h2>{post.description}</h2>
-                            <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
-                                <Link>
-                                    <div>
-                                        <h3>{post.link.linkTitle}</h3>
-                                        <h4>{post.link.linkDescription}</h4>
-                                        <h5>{post.link.linkUrl}</h5>
-                                    </div>
-                                    <img src={`${post.link.linkImage}`} />
-                                </Link>
-                            </a>
-                        </PostRightSide>
-                    </Post>
+                    <>
+                        <PostComponent post={post} index={index} userInfos={userInfos} />
+                    </>
                 )
             })
         )
@@ -116,7 +71,6 @@ export default function UserPage() {
             </HeadlineContainer>
         {userInfos.posts.length > 0 ? renderPosts() : <NoPosts>There are no posts yet</NoPosts>}
         </Timeline>
-        {/* {window.innerWidth > 611 ? <Trending /> : <></>} */}
         <Trending />
       </Main>
     </>
@@ -158,183 +112,6 @@ line-height: 49px;
 color: #FFFFFF;
 `
 
-const Post = styled.article`
-display: flex;
-justify-content: space-between;
-width: 100%;
-background-color: #171717;
-padding: 15px;
-margin-bottom: 16px;
-border-radius: 16px;
-@media (max-width: 375px) {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  background-color: #171717;
-  padding: 15px;
-  margin-bottom: 16px;
-  border-radius: 0;
-}
-`
-
-const PostLeftSide = styled.section`
-display: flex;
-flex-direction: column;
-align-items: center;
-margin-right: 15px;
-p {
-  font-family: Lato;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 9px;
-  line-height: 11px;
-  color: #FFFFFF;
-}
-
-svg {
-    font-size: 17px;
-    margin-bottom: 12px;
-
-    &:hover {
-        cursor: pointer;
-    }
-}
-
-.liked {
-    color: #AC0000;
-}
-
-.not-liked{
-    color: white;
-}
-`
-
-const PostRightSide = styled.section`
-position: relative;
-width: 100%;
-display: flex;
-flex-direction: column;
-h1 {
-  font-family: Lato;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 17px;
-  line-height: 20px;
-  color: #FFFFFF;
-  margin-bottom: 7px;
-}
-h2 {
-  font-family: Lato;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 15px;
-  line-height: 18px;
-  color: #B7B7B7;
-  margin-bottom: 13px;
-}
-`
-
-const EditIcon = styled.div`
-position: absolute;
-right: 25px;
-color: #FFFFFF;
-`
-
-const DeleteIcon = styled.div`
-position: absolute;
-right: 0;
-color: #FFFFFF;
-`
-
-const Link = styled.div`
-width: 100%;
-border: 1px solid #4D4D4D;
-border-radius: 11px;
-display: flex;
-justify-content: space-between;
-div {
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  h3 {
-  font-family: Lato;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 11px;
-  line-height: 13px;
-  color: #CECECE;
-  }
-  h4 {
-  font-family: Lato;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 9px;
-  line-height: 11px;
-  color: #9B9595;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  }
-  h5 {
-  font-family: Lato;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 9px;
-  line-height: 11px;
-  color: #CECECE;
-  }
-}
-img {
-  width: 153px;
-  height: 115px;
-  border-radius: 0px 12px 12px 0px;
-}
-@media (max-width: 375px) {
-  width: 100%;
-  border: 1px solid #4D4D4D;
-  border-radius: 11px;
-  display: flex;
-  justify-content: space-between;
-  div {
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    h3 {
-    font-family: Lato;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 11px;
-    line-height: 13px;
-    color: #CECECE;
-    }
-    h4 {
-    font-family: Lato;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 9px;
-    line-height: 11px;
-    color: #9B9595;
-    margin-top: 4px;
-    margin-bottom: 4px;
-    }
-    h5 {
-    font-family: Lato;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 9px;
-    line-height: 11px;
-    color: #CECECE;
-    }
-  }
-  img {
-    width: 95px;
-    height: 115px;
-    border-radius: 0px 12px 12px 0px;
-  }
-}
-`
-
 const HeadlineContainer = styled.div`
 display: flex;
 align-items: center;
@@ -348,11 +125,4 @@ img{
     width: 40px;
     height: 40px;
 }
-`
-
-const UserPicture = styled.img`
-width: 40px;
-height: 40px;
-border-radius: 50%;
-margin-bottom: 17px;
 `

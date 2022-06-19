@@ -18,26 +18,6 @@ function Home() {
   const { postList, setPostList, getPosts, loadingPosts } = useContext(PostContext);
   const { token } = useContext(AuthContext);
 
-  async function insertLike(postId) {
-    //TODO: Não terminei a função
-    await axios.post(`${URL_API}/like/${postId}`)
-    .then(response => {
-        console.log('Curitada dada');
-    }).catch(err => {
-        console.log('Erro', err);
-    })
-  }
-
-  async function deleteLike(postId) {
-    //TODO: Não terminei a função
-    await axios.delete(`${URL_API}/like/${postId}`)
-    .then(response => {
-        console.log('Curitada dada');
-    }).catch(err => {
-        console.log('Erro', err);
-    })
-  }
-
   function renderPosts() {
     if (loadingPosts) {
       return (
