@@ -16,7 +16,7 @@ function App() {
 
   function getPosts(token) {
     setLoadingPosts(true);
-    const URL = "http://localhost:4000/posts";
+    const URL = "https://projeto17-linkr.herokuapp.com/posts";
     const config = {
       headers: {
         // FIXME: ADICIONAR TOKEN AQUI

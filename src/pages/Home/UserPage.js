@@ -8,7 +8,7 @@ import Header from './../../components/Header';
 import { AuthContext } from '../../contexts/AuthContext';
 import Trending from '../../components/Trending';
 
-const URL_API = `http://localhost:4000`;
+const URL_API = `https://projeto17-linkr.herokuapp.com`;
 
 export default function UserPage() {
 
