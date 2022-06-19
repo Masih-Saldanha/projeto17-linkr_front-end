@@ -2,15 +2,17 @@ import axios from "axios";
 import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
 
+import { AuthContext } from "../../contexts/AuthContext";
 import Hashtag from "./../Hashtag";
 
 
 function Trending() {
   const [hashtags, setHashtags] = useState([""]);
+  const { token } = useContext(AuthContext);
 
   //TODO: persistir token
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJNYXNpaCIsImlhdCI6MTY1NTQ5MDM5NX0.XeWyPACGH3ygylWVkJA-pdIcepRSjk7qISI7a_oqiXo";
+  // const token =
+    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJNYXNpaCIsImlhdCI6MTY1NTQ5MDM5NX0.XeWyPACGH3ygylWVkJA-pdIcepRSjk7qISI7a_oqiXo";
 
   useEffect(() => {
     const URL = "https://projeto17-linkr.herokuapp.com/hashtag/trending";

@@ -2,6 +2,7 @@ import axios from 'axios';
 import { useContext, useState } from 'react';
 import styled from 'styled-components';
 
+import { AuthContext } from '../../contexts/AuthContext';
 import PostContext from '../../contexts/postContext';
 
 function PublishPost() {
@@ -9,6 +10,7 @@ function PublishPost() {
 
     const [postData, setPostData] = useState({ description: "", link: "" });
     const [loading, setLoading] = useState(false);
+    const { token } = useContext(AuthContext);
 
     function publishPost(e) {
         e.preventDefault();
@@ -22,7 +24,7 @@ function PublishPost() {
         const config = {
             headers: {
                 // FIXME: ADICIONAR TOKEN AQUI
-                Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJNYXNpaCIsImlhdCI6MTY1NTQ5MDM5NX0.XeWyPACGH3ygylWVkJA-pdIcepRSjk7qISI7a_oqiXo`
+                Authorization: `Bearer ${token}`
             }
         };
         let metaPostData = {
@@ -34,7 +36,7 @@ function PublishPost() {
         }
         const promise = axios.post(URL, metaPostData, config);
         promise.then(response => {
-            getPosts();
+            getPosts(token);
             setPostData({ description: "", link: "" });
             setLoading(false);
         });
