@@ -39,7 +39,7 @@ function Home() {
     } else {
       return (
         postList.map((post, index) => {
-            const [like, setLike] = useState(false);
+            // const [like, setLike] = useState(false);
           return (
             <Post key={index}>
               <PostLeftSide>
@@ -47,7 +47,9 @@ function Home() {
                 {post.link.likedByUser === false ? <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>
                  : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
 
-                <p>{post.likes + count} likes</p>
+                <p>{post.likes 
+                // + count
+                } likes</p>
               </PostLeftSide>
               <PostRightSide>
                 <EditIcon><IoMdCreate /></EditIcon>

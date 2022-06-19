@@ -47,7 +47,7 @@ function PublishPost() {
 
     return (
         <Section>
-            // FIXME: AQUI VAI A FOTO DO USUARIO LOGADO
+            {/* // FIXME: AQUI VAI A FOTO DO USUARIO LOGADO */}
             <img src="https://wallpapers.com/images/high/ashen-one-from-dark-souls-3-oja56fn40ay19u8u.jpg" />
             <h1>What are you going to share today?</h1>
             {
