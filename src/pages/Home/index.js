@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import styled from 'styled-components';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
@@ -17,12 +17,28 @@ function Home() {
 
   async function insertLike(postId) {
     await axios.post(`${URL_API}/like/${postId}`)
-    .then()
+    .then(response => {
+        console.log('Curitada dada');
+    }).catch(err => {
+        console.log('Erro', err);
+    })
   }
 
-  function defineParametersForLikeButton(likedByUser, state) {
-    if (likedByUser === true) {
+  function defineParametersForLikeButton(likedByUser, postId) {
+    // if (state === null) {
+    //     if (likedByUser === true) {
+    //         setState(true);
+    //         return <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />;
+    //     } else {
+    //         setState(false);
+    //         return <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>;
+    //     }
+    // }
 
+    if (likedByUser === true) {
+        return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
+    } else {
+        return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked'/>;
     }
   }
 
@@ -38,15 +54,12 @@ function Home() {
     } else {
       return (
         postList.map((post, index) => {
-            const [like, setLike] = useState(false);
           return (
             <Post key={index}>
               <PostLeftSide>
                 <UserPicture src={post.userPicture} />
-                {post.link.likedByUser === false ? <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>
-                 : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
-
-                <p>{post.likes + count} likes</p>
+                {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
+                <p>{post.likes} likes</p>
               </PostLeftSide>
               <PostRightSide>
                 <h1 onClick={() => navigate(`/user/${post.userId}`)}>{post.username}</h1>
