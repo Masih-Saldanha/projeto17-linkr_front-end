@@ -7,10 +7,8 @@ export default function PostComponent(props) {
 
     const [liked, setLiked] = useState(false);
     const {post, index, userInfos} = props;
-    console.log('Entrou no postComponent');
 
     function defineParametersForLikeButton(likedByUser, postId) {
-        console.log('Entrou nos parametros');
         if (likedByUser) {
             return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
         } else {

@@ -42,7 +42,6 @@ export default function UserPage() {
 
     function renderPosts() {
         const {posts} = userInfos;
-        console.log('Entrou na renderPosts');
         return (
             posts.map((post, index) => {
                 return (
