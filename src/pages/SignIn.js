@@ -3,10 +3,10 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import requestAuthApi from "../services/api/auth.js";
-//import useAuth from "../hooks/useAuth";
+import useAuth from "../hooks/useAuth";
 
 function SignIn() {
-        //const { signIn, token } = useAuth();
+        const { signIn, token } = useAuth();
         const navigate = useNavigate();
         
 
@@ -27,7 +27,7 @@ function SignIn() {
                 promise.then((response) => {
                         setSignInStatus(false);
                         console.log(response.data);
-                        //signIn(response.data.token, response.data.picture);
+                        signIn(response.data);
                         navigate("/timeline");
                 });
                 promise.catch((e) => {

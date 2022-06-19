@@ -1,12 +1,14 @@
 import { useContext, useState } from 'react';
 import styled from 'styled-components';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { IoMdCreate, IoMdTrash } from 'react-icons/io';
 import axios from 'axios';
 
 import PublishPost from '../../components/PublishPost';
 import PostContext from '../../contexts/postContext';
 import Header from './../../components/Header';
 import { IoHeartOutline, IoHeart } from 'react-icons/io5';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const URL_API = `https://projeto17-linkr.herokuapp.com`;
 
@@ -14,8 +16,10 @@ function Home() {
 
   const navigate = useNavigate();
   const { postList, setPostList, getPosts, loadingPosts } = useContext(PostContext);
+  const { token } = useContext(AuthContext);
 
   async function insertLike(postId) {
+    //TODO: Não terminei a função
     await axios.post(`${URL_API}/like/${postId}`)
     .then(response => {
         console.log('Curitada dada');
@@ -24,22 +28,14 @@ function Home() {
     })
   }
 
-  function defineParametersForLikeButton(likedByUser, postId) {
-    // if (state === null) {
-    //     if (likedByUser === true) {
-    //         setState(true);
-    //         return <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />;
-    //     } else {
-    //         setState(false);
-    //         return <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>;
-    //     }
-    // }
-
-    if (likedByUser === true) {
-        return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
-    } else {
-        return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked'/>;
-    }
+  async function deleteLike(postId) {
+    //TODO: Não terminei a função
+    await axios.delete(`${URL_API}/like/${postId}`)
+    .then(response => {
+        console.log('Curitada dada');
+    }).catch(err => {
+        console.log('Erro', err);
+    })
   }
 
   function renderPosts() {
@@ -58,10 +54,14 @@ function Home() {
             <Post key={index}>
               <PostLeftSide>
                 <UserPicture src={post.userPicture} />
-                {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
+                {post.link.likedByUser === false ? <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>
+                 : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
+
                 <p>{post.likes} likes</p>
               </PostLeftSide>
               <PostRightSide>
+                <EditIcon><IoMdCreate /></EditIcon>
+                <DeleteIcon><IoMdTrash /></DeleteIcon>
                 <h1 onClick={() => navigate(`/user/${post.userId}`)}>{post.username}</h1>
                 <h2>{post.description}</h2>
                 <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
@@ -86,12 +86,13 @@ function Home() {
     <>
       <Header />
       <Main>
+        {/* FIXME: AQUI ENTRAR A SIDE COM HASHTAGS */}
         <Timeline>
           <TimelineTitle
             onClick={() => {
               // AQUI É PARA TESTES FÁCEIS:
 
-              getPosts();
+              getPosts(token);
               // setPostList([
               //   {
               //     userPicture: "https://wallpapers.com/images/high/ashen-one-from-dark-souls-3-oja56fn40ay19u8u.jpg",
@@ -148,8 +149,11 @@ width: 100vw;
 `
 
 const Timeline = styled.div`
-position: relative;
-width: 100%;
+width: 611px;
+@media (max-width: 375px) {
+  position: relative;
+  width: 100%;
+}
 `
 
 const TimelineTitle = styled.h1`
@@ -179,6 +183,16 @@ width: 100%;
 background-color: #171717;
 padding: 15px;
 margin-bottom: 16px;
+border-radius: 16px;
+@media (max-width: 375px) {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #171717;
+  padding: 15px;
+  margin-bottom: 16px;
+  border-radius: 0;
+}
 `
 
 const PostLeftSide = styled.section`
@@ -214,6 +228,7 @@ svg {
 `
 
 const PostRightSide = styled.section`
+position: relative;
 width: 100%;
 display: flex;
 flex-direction: column;
@@ -237,6 +252,18 @@ h2 {
 }
 `
 
+const EditIcon = styled.div`
+position: absolute;
+right: 25px;
+color: #FFFFFF;
+`
+
+const DeleteIcon = styled.div`
+position: absolute;
+right: 0;
+color: #FFFFFF;
+`
+
 const Link = styled.div`
 width: 100%;
 border: 1px solid #4D4D4D;
@@ -247,7 +274,7 @@ div {
   padding: 8px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
   h3 {
   font-family: Lato;
   font-style: normal;
@@ -276,9 +303,53 @@ div {
   }
 }
 img {
-  width: 95px;
+  width: 153px;
   height: 115px;
   border-radius: 0px 12px 12px 0px;
+}
+@media (max-width: 375px) {
+  width: 100%;
+  border: 1px solid #4D4D4D;
+  border-radius: 11px;
+  display: flex;
+  justify-content: space-between;
+  div {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    h3 {
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 13px;
+    color: #CECECE;
+    }
+    h4 {
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 9px;
+    line-height: 11px;
+    color: #9B9595;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    }
+    h5 {
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 9px;
+    line-height: 11px;
+    color: #CECECE;
+    }
+  }
+  img {
+    width: 95px;
+    height: 115px;
+    border-radius: 0px 12px 12px 0px;
+  }
 }
 `
 

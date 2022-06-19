@@ -5,9 +5,9 @@ import styled from 'styled-components';
 import { IoHeartOutline } from 'react-icons/io5';
 
 import Header from './../../components/Header';
-import PublishPost from '../../components/PublishPost';
+import { AuthContext } from '../../contexts/AuthContext';
 
-const URL_API = `https://projeto17-linkr.herokuapp.com`;
+const URL_API = `http://localhost:4000`;
 
 export default function UserPage() {
 
@@ -16,33 +16,67 @@ export default function UserPage() {
     const [userInfos, setUserInfos] = useState({});
     const [render, setRender] = useState(false);
     const [loading, setLoading] = useState(true);
+    const { token } = useContext(AuthContext);
 
     const config = {
         headers: {
-            'Authorization': `Bearer ${user.token}`
+            Authorization: `Bearer ${token}`
         }
     };
 
     useEffect(() => {
-        const promise = axios.get(`${URL_API}/user/${id}`);
+        const promise = axios.get(`${URL_API}/user/${id}`, config);
         promise.then(response => {
             setUserInfos(response.data);
             setLoading(false);
         })
         .catch(error => {
-            console.log(error.response);
-            navigate('/');
+            console.log(error);
+            console.log('veio pro erro');
+            // setLoading(false);
+            // navigate('/');
         })
     }, [render]);
 
-    async function renderPosts() {
+    function defineParametersForLikeButton(likedByUser, postId) {
+        if (likedByUser === true) {
+            return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
+        } else {
+            return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked'/>;
+        }
+    }
+    //TODO: preciso terminar a lógica de inserir o like no front depois de ter feito a requisição
+    async function insertLike(postId) {
+        //TODO: Não terminei a função
+        await axios.post(`${URL_API}/like/${postId}`)
+        .then(response => {
+            console.log('Curitada dada');
+        }).catch(err => {
+            console.log('Erro', err);
+        })
+      }
+    
+      async function deleteLike(postId) {
+        //TODO: Não terminei a função
+        await axios.delete(`${URL_API}/like/${postId}`)
+        .then(response => {
+            console.log('Curitada dada');
+        }).catch(err => {
+            console.log('Erro', err);
+        })
+      }
+
+    //TODO: Verificar se o usuario que entra é o mesmo que esta sendo procurado, nesse caso exibir o publish post
+    //TODO: Ajustar o layout
+    function renderPosts() {
+        const {posts} = userInfos;
         return (
-            userInfos.posts.map((post, index) => {
+            posts.map((post, index) => {
                 return (
                     <Post key={index}>
                         <PostLeftSide>
                             <UserPicture src={userInfos.pictureUrl} />
-                            <IoHeartOutline />
+                            {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
                             <p>{post.likes} likes</p>
                         </PostLeftSide>
                         <PostRightSide>
@@ -78,7 +112,6 @@ export default function UserPage() {
         <img src={userInfos.pictureUrl} />
         <TimelineTitle>{userInfos.username}'s Posts</TimelineTitle>
       </HeadlineContainer>
-      {1 === 2 ? <PublishPost></PublishPost> : <></>}
       {userInfos.posts.length > 0 ? renderPosts() : <NoPosts>There are no posts yet</NoPosts>}
     </>
     )

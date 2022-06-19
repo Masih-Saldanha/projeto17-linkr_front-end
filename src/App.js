@@ -1,26 +1,26 @@
 import { useState } from 'react';
+import { AuthProvider } from "./contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import axios from 'axios';
-
 import Home from './pages/Home';
 import UserPage from './pages/Home/UserPage';
 import PostContext from './contexts/postContext';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
-
 import PostsByHashtag from './pages/PostsByHashtag';
+
 
 function App() {
   const [postList, setPostList] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(false);
 
-  function getPosts() {
+  function getPosts(token) {
     setLoadingPosts(true);
-    const URL = "https://projeto17-linkr.herokuapp.com/posts";
+    const URL = "http://localhost:4000/posts";
     const config = {
       headers: {
         // FIXME: ADICIONAR TOKEN AQUI
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJNYXNpaCIsImlhdCI6MTY1NTQ5MDM5NX0.XeWyPACGH3ygylWVkJA-pdIcepRSjk7qISI7a_oqiXo`
+        Authorization: `Bearer ${token}`
       }
     };
     const promise = axios.get(URL, config);
@@ -40,6 +40,7 @@ function App() {
   }
 
   return (
+    <AuthProvider>
     <PostContext.Provider
       value={{
         postList,
@@ -58,6 +59,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </PostContext.Provider>
+    </AuthProvider>
   )
 }
 
