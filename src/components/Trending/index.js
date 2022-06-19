@@ -10,10 +10,6 @@ function Trending() {
   const [hashtags, setHashtags] = useState([""]);
   const { token } = useContext(AuthContext);
 
-  //TODO: persistir token
-  // const token =
-    // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJNYXNpaCIsImlhdCI6MTY1NTQ5MDM5NX0.XeWyPACGH3ygylWVkJA-pdIcepRSjk7qISI7a_oqiXo";
-
   useEffect(() => {
     const URL = "https://projeto17-linkr.herokuapp.com/hashtag/trending";
     const CONFIG = {
@@ -31,9 +27,12 @@ function Trending() {
   return (
     <Section>
       <Title>trending</Title>
-      {hashtags?.map((tag, index) => (
-        <Hashtag key={index} hashtag={tag} />
-      ))}
+      {hashtags?.map((tag, index) => {
+        return(
+            <Hashtag key={index} hashtag={tag.hashtag} />
+        )
+      }
+      )}
     </Section>
   );
 }
