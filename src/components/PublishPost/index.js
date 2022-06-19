@@ -47,6 +47,8 @@ function PublishPost() {
 
     return (
         <Section>
+            // FIXME: AQUI VAI A FOTO DO USUARIO LOGADO
+            <img src="https://wallpapers.com/images/high/ashen-one-from-dark-souls-3-oja56fn40ay19u8u.jpg" />
             <h1>What are you going to share today?</h1>
             {
                 !loading ?
@@ -90,16 +92,24 @@ function PublishPost() {
 
 const Section = styled.section`
 position: relative;
-text-align: center;
-padding: 10px 15px 40px 15px;
+padding: 21px 22px 52px 87px;
 background-color: #FFFFFF;
-margin-bottom: 16px;
+margin-bottom: 29px;
+border-radius: 16px;
+img {
+    position: absolute;
+    top: 16px;
+    left: 18px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
 h1 {
     font-family: Lato;
     font-style: normal;
     font-weight: 300;
-    font-size: 17px;
-    line-height: 20px;
+    font-size: 20px;
+    line-height: 24px;
     color: #707070;
     margin-bottom: 10px;
 }
@@ -108,10 +118,10 @@ form {
     flex-direction: column;
     button {
         position: absolute;
-        bottom: 12px;
-        right: 15px;
+        bottom: 16px;
+        right: 22px;
         width: 112px;
-        height: 22px;
+        height: 31px;
         background-color: #1877F2;
         border-radius: 5px;
         border: none;
@@ -124,6 +134,48 @@ form {
         color: #FFFFFF;
     }
 }
+@media (max-width: 375px) {
+    position: relative;
+    text-align: center;
+    padding: 10px 15px 40px 15px;
+    background-color: #FFFFFF;
+    margin-bottom: 16px;
+    border-radius: 0;
+    img {
+        display: none;
+    }
+    h1 {
+        font-family: Lato;
+        font-style: normal;
+        font-weight: 300;
+        font-size: 17px;
+        line-height: 20px;
+        color: #707070;
+        margin-bottom: 10px;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        button {
+            position: absolute;
+            bottom: 12px;
+            right: 15px;
+            width: 112px;
+            height: 22px;
+            background-color: #1877F2;
+            border-radius: 5px;
+            border: none;
+
+            font-family: Lato;
+            font-style: normal;
+            font-weight: 700;
+            font-size: 13px;
+            line-height: 16px;
+            color: #FFFFFF;
+        }
+    }
+}
+
 `
 
 const Link = styled.input`
@@ -131,15 +183,31 @@ background-color: #EFEFEF;
 border-radius: 5px;
 border: none;
 height: 30px;
-padding-left: 11px;
+padding-left: 13px;
 margin-bottom: 5px;
 ::placeholder {
     font-family: Lato;
     font-style: normal;
     font-weight: 300;
-    font-size: 13px;
-    line-height: 16px;
+    font-size: 15px;
+    line-height: 18px;
     color: #949494;
+}
+@media (max-width: 375px) {
+    background-color: #EFEFEF;
+    border-radius: 5px;
+    border: none;
+    height: 30px;
+    padding-left: 11px;
+    margin-bottom: 5px;
+    ::placeholder {
+        font-family: Lato;
+        font-style: normal;
+        font-weight: 300;
+        font-size: 13px;
+        line-height: 16px;
+        color: #949494;
+    }
 }
 `
 
@@ -147,15 +215,30 @@ const Description = styled.input`
 background-color: #EFEFEF;
 border-radius: 5px;
 border: none;
-height: 47px;
-padding-left: 11px;
+height: 66px;
+padding-left: 13px;
 ::placeholder {
     font-family: Lato;
     font-style: normal;
     font-weight: 300;
-    font-size: 13px;
-    line-height: 16px;
+    font-size: 15px;
+    line-height: 18px;
     color: #949494;
+}
+@media (max-width: 375px) {
+    background-color: #EFEFEF;
+    border-radius: 5px;
+    border: none;
+    height: 47px;
+    padding-left: 11px;
+    ::placeholder {
+        font-family: Lato;
+        font-style: normal;
+        font-weight: 300;
+        font-size: 13px;
+        line-height: 16px;
+        color: #949494;
+    }
 }
 `
 
