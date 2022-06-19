@@ -15,22 +15,22 @@ function PublishPost() {
 
     useEffect(() => {
         getPosts(token);
-        // getUserPicture();
+        getUserPicture();
     }, []);
 
     function getUserPicture() {
         // ta feio assim pra evitar conflito no back com /user/:id
-        const URL = "http://localhost:4000/picture/user";
+        const URL = "https://projeto17-linkr.herokuapp.com/picture/user";
         const config = {
             headers: {
                 // FIXME: ADICIONAR TOKEN AQUI
                 Authorization: `Bearer ${token}`
             }
         };
-        const promise = axios.post(URL, config);
+        const promise = axios.get(URL, config);
         promise.then(response => {
             const { data } = response;
-            setUserPicture(data);
+            setUserPicture(data.pictureUrl);
         });
         promise.catch(error => {
             alert("Houve um erro ao buscar a foto do usuário!");
