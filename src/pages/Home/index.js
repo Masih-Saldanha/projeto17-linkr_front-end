@@ -1,17 +1,31 @@
 import { useContext } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { IoMdCreate, IoMdTrash } from "react-icons/io";
+import { IoMdCreate, IoMdTrash } from 'react-icons/io';
+import axios from 'axios';
 
 import PublishPost from '../../components/PublishPost';
 import PostContext from '../../contexts/postContext';
 import Header from './../../components/Header';
-import disliked from './../../assets/heart-outline.png'
-import liked from './../../assets/heart.png';
+import { IoHeartOutline, IoHeart } from 'react-icons/io5';
+
+const URL_API = `https://projeto17-linkr.herokuapp.com`;
 
 function Home() {
+
   const navigate = useNavigate();
   const { postList, setPostList, getPosts, loadingPosts } = useContext(PostContext);
+
+  async function insertLike(postId) {
+    await axios.post(`${URL_API}/like/${postId}`)
+    .then()
+  }
+
+  function defineParametersForLikeButton(likedByUser, state) {
+    if (likedByUser === true) {
+
+    }
+  }
 
   function renderPosts() {
     if (loadingPosts) {
@@ -25,12 +39,15 @@ function Home() {
     } else {
       return (
         postList.map((post, index) => {
+            const [like, setLike] = useState(false);
           return (
             <Post key={index}>
               <PostLeftSide>
                 <UserPicture src={post.userPicture} />
-                <LikeButton src={disliked} />
-                <p>{post.likes} likes</p>
+                {post.link.likedByUser === false ? <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>
+                 : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
+
+                <p>{post.likes + count} likes</p>
               </PostLeftSide>
               <PostRightSide>
                 <EditIcon><IoMdCreate /></EditIcon>
@@ -181,6 +198,23 @@ p {
   line-height: 11px;
   color: #FFFFFF;
 }
+
+svg {
+    font-size: 17px;
+    margin-bottom: 12px;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.liked {
+    color: #AC0000;
+}
+
+.not-liked{
+    color: white;
+}
 `
 
 const PostRightSide = styled.section`
@@ -314,12 +348,6 @@ width: 40px;
 height: 40px;
 border-radius: 50%;
 margin-bottom: 17px;
-`
-
-const LikeButton = styled.img`
-width: 17px;
-height: 15px;
-margin-bottom: 12px;
 `
 
 export default Home;

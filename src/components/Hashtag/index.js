@@ -1,10 +1,17 @@
 import styled from 'styled-components';
+import { useNavigate } from 'react-router';
 
 function Hashtag(props){
 
   const { hashtag } = props;
+  const navigate = useNavigate();
+
+  function HandleClick(){
+    navigate(`/hashtag/${hashtag}`);
+  }
+
   return (
-    <Tags># { hashtag }</Tags>
+    <Tags onClick={HandleClick}># { hashtag }</Tags>
   )
 }
 
