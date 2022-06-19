@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { AuthContext } from '../../contexts/AuthContext';
@@ -7,10 +7,35 @@ import PostContext from '../../contexts/postContext';
 
 function PublishPost() {
     const { getPosts } = useContext(PostContext);
+    const [userPicture, setUserPicture] = useState("");
 
     const [postData, setPostData] = useState({ description: "", link: "" });
     const [loading, setLoading] = useState(false);
     const { token } = useContext(AuthContext);
+
+    useEffect(() => {
+        getPosts(token);
+        // getUserPicture();
+    }, []);
+
+    function getUserPicture() {
+        // ta feio assim pra evitar conflito no back com /user/:id
+        const URL = "http://localhost:4000/picture/user";
+        const config = {
+            headers: {
+                // FIXME: ADICIONAR TOKEN AQUI
+                Authorization: `Bearer ${token}`
+            }
+        };
+        const promise = axios.post(URL, config);
+        promise.then(response => {
+            const { data } = response;
+            setUserPicture(data);
+        });
+        promise.catch(error => {
+            alert("Houve um erro ao buscar a foto do usuário!");
+        });
+    }
 
     function publishPost(e) {
         e.preventDefault();
@@ -50,7 +75,7 @@ function PublishPost() {
     return (
         <Section>
             {/* // FIXME: AQUI VAI A FOTO DO USUARIO LOGADO */}
-            <img src="https://wallpapers.com/images/high/ashen-one-from-dark-souls-3-oja56fn40ay19u8u.jpg" />
+            <img src={userPicture} />
             <h1>What are you going to share today?</h1>
             {
                 !loading ?
