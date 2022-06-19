@@ -16,7 +16,6 @@ export function AuthProvider({ children }) {
 
     function signOut() {
         setToken(null);
-        setImage(null);
         localStorage.removeItem(LOCAL_STORAGE_KEY);
     }
 

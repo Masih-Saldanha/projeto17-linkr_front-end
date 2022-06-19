@@ -30,7 +30,12 @@ function Trending() {
     <Section>
       <Title>trending</Title>
       {console.log(hashtags)}
-      { hashtags?.map((tag, index) => (<Hashtag key={index} hashtag={tag.hashtag} /> )) }
+      {hashtags?.map((tag, index) => {
+        return(
+            <Hashtag key={index} hashtag={tag.hashtag} />
+        )
+      }
+      )}
     </Section>
   );
 }
