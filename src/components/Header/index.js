@@ -1,13 +1,43 @@
-import styled from "styled-components";
-import useAuth from "../../hooks/useAuth";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import axios from "axios";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
+
+import useAuth from "../../hooks/useAuth";
+import { AuthContext } from "../../contexts/AuthContext";
  
 function Header(props) {
         const { signOut, image } = useAuth();
         const { toggle, setToggle } = props;
         const navigate = useNavigate();
+
+        const [userPicture, setUserPicture] = useState("");
+        const { token } = useContext(AuthContext);
+      
+        useEffect(() => {
+          getUserPicture();
+        }, []);
+      
+        function getUserPicture() {
+          // ta feio assim pra evitar conflito no back com /user/:id
+          const URL = "https://projeto17-linkr.herokuapp.com/picture/user";
+          const config = {
+            headers: {
+              // FIXME: ADICIONAR TOKEN AQUI
+              Authorization: `Bearer ${token}`
+            }
+          };
+          const promise = axios.get(URL, config);
+          promise.then(response => {
+            const { data } = response;
+            setUserPicture(data.pictureUrl);
+          });
+          promise.catch(error => {
+            alert("Houve um erro ao buscar a foto do usuário!");
+          });
+        }
  
         const handleLogout = () => {
                 signOut();
@@ -25,7 +55,7 @@ function Header(props) {
                                         ) : (
                                                 <IoIosArrowDown color="#FFFFFF" size={18} strokeWidth="5" />
                                         )}
-                                        <img src={image} alt="userImage" />
+                                        <img src={userPicture} alt="userImage" />
                                 </div>
                         </Container>
                         {toggle ? (
