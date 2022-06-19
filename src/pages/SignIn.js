@@ -5,10 +5,16 @@ import { useNavigate } from "react-router-dom";
 import requestAuthApi from "../services/api/auth.js";
 import useAuth from "../hooks/useAuth";
 
+
+
 function SignIn() {
         const { signIn, token } = useAuth();
         const navigate = useNavigate();
-        
+        useEffect(() => {
+                if (token) {
+                        navigate("/timeline");
+                }
+                }, []);
 
         const [userSignIn, setSignIn] = useState({
                 email: "",
