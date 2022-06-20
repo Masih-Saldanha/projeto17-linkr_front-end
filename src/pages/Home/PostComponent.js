@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {useState, useContext} from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { IoHeartOutline, IoHeart } from 'react-icons/io5';
+import ReactTooltip from 'react-tooltip';
 
 // const URL_API = `https://projeto17-linkr.herokuapp.com`;
 const URL_API = `http://localhost:4000`;
@@ -13,7 +14,10 @@ export default function PostComponent(props) {
     const { token } = useContext(AuthContext);
     const [liked, setLiked] = useState(false);
     const [count, setCount] = useState(0);
+    const [likesHover, setLikesHover] = useState([]);
+    const [userLikedState, setUserLikedState] = useState(null);
     const {post, index, userInfos} = props;
+    const [text, setText] = useState(null);
     const navigate = useNavigate();
 
     let countNotState = '';
@@ -55,9 +59,9 @@ export default function PostComponent(props) {
         }).catch(err => {
             console.log('Erro', err);
         })
-      }
+    }
     
-      async function deleteLike(postId) {
+    async function deleteLike(postId) {
         await axios.delete(`${URL_API}/like/${postId}`, config)
         .then(response => {
             setCount(count + 1);
@@ -65,14 +69,63 @@ export default function PostComponent(props) {
         }).catch(err => {
             console.log('Erro', err);
         })
-      }
+    }
+
+    async function getLikesOnHover(postId) {
+        await axios.get(`${URL_API}/like/${postId}`, config)
+        .then(async (response) => {
+            const {likes, userLiked} = response.data;
+            const arrOfLikes = likes.map(like => like.username);
+            // await setLikesHover([...arrOfLikes]);
+            // await setUserLikedState(userLiked ? true : false);
+            // setText(hoverControl(likesHover, userLiked));
+            setText(hoverControl(arrOfLikes, userLiked));
+        }).catch(err => {
+            console.log('Erro', err);
+        })
+    }
+
+    function hoverControl(arr, bool) {
+        const users = arr.length;
+
+        if (users === 0) return 'Seja o primeiro a dar like!';
+
+        if (users === 1) {
+            if (bool) {
+                return 'Você gostou disso';
+            } else {
+                return `${arr.join(' ')} gostou disso`;
+            }
+        }
+
+        if (users <= 3) {
+            if (bool) {
+                return `Você, ${arr.join(', ')} gostaram disso`;
+            } else {
+                return `${arr.join(', ')} gostaram disso`;
+            }
+        }
+
+        if (users > 3) {
+            if (bool) {
+                return `Você, ${arr.splice(0, 1).join(', ')} e mais ${users - 2} pessoas gostaram disso`;
+            } else {
+                return `${arr.splice(0, 2).join(', ')} e mais ${users - 2} pessoas gostaram disso`;
+            }
+        }
+    }
 
     return (
         <Post key={index}>
             <PostLeftSide>
                 <UserPicture src={userInfos.pictureUrl} />
-                {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
-                <p>{countLikes(post.likes, countNotState)} likes</p>
+                {defineParametersForLikeButton(post.link.likedByUser, post.postId)}  
+                <p data-tip="" data-for={`${post.postId}`} onMouseOver={() => getLikesOnHover(post.postId)}>{countLikes(post.likes, countNotState)} likes</p>
+                {text ? 
+                <ReactTooltip id={`${post.postId}`} place="bottom">
+                    {text}
+                </ReactTooltip> :
+                <></>}
             </PostLeftSide>
             <PostRightSide>
             <h1 onClick={() => navigate(`/user/${post.userId}`)}>{userInfos.username}</h1>
