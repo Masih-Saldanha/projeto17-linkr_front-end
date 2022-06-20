@@ -19,11 +19,9 @@ function PublishPost() {
     }, []);
 
     function getUserPicture() {
-        // ta feio assim pra evitar conflito no back com /user/:id
         const URL = "https://projeto17-linkr.herokuapp.com/picture/user";
         const config = {
             headers: {
-                // FIXME: ADICIONAR TOKEN AQUI
                 Authorization: `Bearer ${token}`
             }
         };
@@ -48,7 +46,6 @@ function PublishPost() {
         const URL = "https://projeto17-linkr.herokuapp.com/posts";
         const config = {
             headers: {
-                // FIXME: ADICIONAR TOKEN AQUI
                 Authorization: `Bearer ${token}`
             }
         };
@@ -75,7 +72,6 @@ function PublishPost() {
 
     return (
         <Section>
-            {/* // FIXME: AQUI VAI A FOTO DO USUARIO LOGADO */}
             <img src={userPicture} />
             <h1>What are you going to share today?</h1>
             {

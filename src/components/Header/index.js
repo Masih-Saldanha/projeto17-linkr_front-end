@@ -9,8 +9,7 @@ import { IoSearchOutline } from 'react-icons/io5';
 import useAuth from "../../hooks/useAuth";
 import { AuthContext } from "../../contexts/AuthContext";
 
-// const URL_API = `https://projeto17-linkr.herokuapp.com`;
-const URL_API = `http://localhost:4000`;
+const URL_API = `https://projeto17-linkr.herokuapp.com`;
  
 function Header(props) {
         const { signOut, image } = useAuth();
