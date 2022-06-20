@@ -9,12 +9,14 @@ import PostContext from '../../contexts/postContext';
 import Header from './../../components/Header';
 import { IoHeartOutline, IoHeart } from 'react-icons/io5';
 import { AuthContext } from '../../contexts/AuthContext';
+import PostComponent from './PostComponent';
+import Trending from '../../components/Trending';
 
 const URL_API = `https://projeto17-linkr.herokuapp.com`;
 
 function Home() {
   const [toggle, setToggle] = useState(false);
-  
+
   const navigate = useNavigate();
   const { postList, setPostList, getPosts, loadingPosts } = useContext(PostContext);
   const { token } = useContext(AuthContext);
@@ -31,34 +33,44 @@ function Home() {
     } else {
       return (
         postList.map((post, index) => {
+          const userInfos = { pictureUrl: post.userPicture, username: post.username };
           return (
-            <Post key={index}>
-              <PostLeftSide>
-                <UserPicture src={post.userPicture} />
-                {post.link.likedByUser === false ? <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>
-                : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
-                <p>{post.likes} likes</p>
-              </PostLeftSide>
-              <PostRightSide>
-                <EditIcon><IoMdCreate /></EditIcon>
-                <DeleteIcon><IoMdTrash /></DeleteIcon>
-                <h1 onClick={() => navigate(`/user/${post.userId}`)}>{post.username}</h1>
-                <h2>{post.description}</h2>
-                <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
-                  <Link>
-                    <div>
-                      <h3>{post.link.linkTitle}</h3>
-                      <h4>{post.link.linkDescription}</h4>
-                      <h5>{post.link.linkUrl}</h5>
-                    </div>
-                    <img src={`${post.link.linkImage}`} />
-                  </Link>
-                </a>
-              </PostRightSide>
-            </Post>
+            <>
+              <PostComponent post={post} index={index} userInfos={userInfos} />
+            </>
           )
         })
       )
+      // return (
+      //   postList.map((post, index) => {
+      //     return (
+      //       <Post key={index}>
+      //         <PostLeftSide>
+      //           <UserPicture src={post.userPicture} />
+      //           {post.link.likedByUser === false ? <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>
+      //           : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
+      //           <p>{post.likes} likes</p>
+      //         </PostLeftSide>
+      //         <PostRightSide>
+      //           <EditIcon><IoMdCreate /></EditIcon>
+      //           <DeleteIcon><IoMdTrash /></DeleteIcon>
+      //           <h1 onClick={() => navigate(`/user/${post.userId}`)}>{post.username}</h1>
+      //           <h2>{post.description}</h2>
+      //           <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
+      //             <Link>
+      //               <div>
+      //                 <h3>{post.link.linkTitle}</h3>
+      //                 <h4>{post.link.linkDescription}</h4>
+      //                 <h5>{post.link.linkUrl}</h5>
+      //               </div>
+      //               <img src={`${post.link.linkImage}`} />
+      //             </Link>
+      //           </a>
+      //         </PostRightSide>
+      //       </Post>
+      //     )
+      //   })
+      // )
     }
   }
 
@@ -71,51 +83,13 @@ function Home() {
           <TimelineTitle
             onClick={() => {
               // AQUI É PARA TESTES FÁCEIS:
-
               getPosts(token);
-              // setPostList([
-              //   {
-              //     userPicture: "https://wallpapers.com/images/high/ashen-one-from-dark-souls-3-oja56fn40ay19u8u.jpg",
-              //     likes: 3,
-              //     username: "Masih",
-              //     description: "Testando localmente",
-              //     link: {
-              //       linkUrl: "http://www.pudim.com.br",
-              //       linkTitle: "Pudim",
-              //       linkDescription: "",
-              //       linkImage: ""
-              //     }
-              //   },
-              //   {
-              //     userPicture: "https://wallpapers.com/images/high/ashen-one-from-dark-souls-3-oja56fn40ay19u8u.jpg",
-              //     likes: 3,
-              //     username: "Masih",
-              //     description: "Testando localmente",
-              //     link: {
-              //       linkUrl: "http://facebook.com.br",
-              //       linkTitle: "Facebook &#x2013; entre ou cadastre-se",
-              //       linkDescription: "Entre no Facebook para começar a compartilhar e se conectar com seus amigos, familiares e com as pessoas que você conhece.",
-              //       linkImage: "https://www.facebook.com/images/fb_icon_325x325.png"
-              //     }
-              //   },
-              //   {
-              //     userPicture: "https://wallpapers.com/images/high/ashen-one-from-dark-souls-3-oja56fn40ay19u8u.jpg",
-              //     likes: 3,
-              //     username: "Masih",
-              //     description: "Testando localmente",
-              //     link: {
-              //       linkUrl: "http://www.google.com.br",
-              //       linkTitle: "Google",
-              //       linkImage: "/images/branding/googleg/1x/googleg_standard_color_128dp.png"
-              //     }
-              //   }
-              // ])
-              // console.log(postList);
             }}
           >timeline</TimelineTitle>
           <PublishPost></PublishPost>
           {renderPosts()}
         </Timeline>
+        <Trending />
       </Main>
     </>
   )
