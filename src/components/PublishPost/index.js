@@ -56,9 +56,10 @@ function PublishPost() {
             description: postData.description,
             link: postData.link
         }
-        if (!postData.description) {
+        if (!metaPostData.description) {
             delete metaPostData.description;
         }
+        console.log(metaPostData);
         const promise = axios.post(URL, metaPostData, config);
         promise.then(response => {
             getPosts(token);

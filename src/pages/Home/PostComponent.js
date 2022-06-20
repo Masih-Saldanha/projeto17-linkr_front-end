@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
+import Modal from 'react-modal';
 import jwtDecode from 'jwt-decode';
 
 import { IoMdCreate, IoMdTrash } from 'react-icons/io';
@@ -26,6 +27,7 @@ export default function PostComponent(props) {
   };
   // console.log(decoded.id);
   const inputRef = useRef();
+  Modal.setAppElement("#root");
 
   // States:
 
@@ -34,6 +36,9 @@ export default function PostComponent(props) {
   const [enableEdit, setEnableEdit] = useState(true);
   const [originalDescription, setOriginalDescription] = useState(post.description);
   const [newDescription, setNewDescription] = useState(post.description);
+  const [isOpen, setIsOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   const [liked, setLiked] = useState(false);
   const [count, setCount] = useState(0);
   const [text, setText] = useState(null);
@@ -198,6 +203,10 @@ export default function PostComponent(props) {
     }
   }
 
+  function toggleModal() {
+    setIsOpen(!isOpen);
+  }
+
   useEffect(() => {
     // console.log(inputRef.current)
     if (inputRef.current) {
@@ -260,25 +269,20 @@ export default function PostComponent(props) {
     });
   }
 
-  function deletePost(postId) {
-    console.log(`Delete post: ${postId}`);
-    let input = window.confirm("Deseja apagar esse post?");
-    if (input) {
-      // setDeleting(true);
-      sendDeletePost(postId);
-    }
-  }
-
-  function sendDeletePost(postId) {
-    const promise = axios.delete(`${URL_API}/posts/${postId}`, config);
+  function sendDeletePost() {
+    setDeleting(true);
+    const promise = axios.delete(`${URL_API}/posts/${post.postId}`, config);
     promise.then(response => {
       console.log(response.data);
-      // setDeleting(false);
+      setDeleting(false);
+      toggleModal();
       setDeleted(true);
     });
     promise.catch(error => {
       console.log(error.response.data);
-      // setDeleting(false);
+      setDeleting(false);
+      toggleModal();
+      alert("Não foi possível excluir o post");
     });
   }
 
@@ -303,7 +307,37 @@ export default function PostComponent(props) {
             post.userId === decoded.id ?
               <>
                 <EditIcon onClick={() => editPost(post.postId)}><IoMdCreate /></EditIcon>
-                <DeleteIcon onClick={() => deletePost(post.postId)}><IoMdTrash /></DeleteIcon>
+                <DeleteIcon onClick={() => {
+                  // deletePost(post.postId);
+                  toggleModal();
+                }}><IoMdTrash /></DeleteIcon>
+                <Modal
+                  isOpen={isOpen}
+                  onRequestClose={toggleModal}
+                  className="_"
+                  overlayClassName="_"
+                  contentElement={(props, children) => (
+                    <ModalStyle {...props}>{children}</ModalStyle>
+                  )}
+                  overlayElement={(props, contentElement) => (
+                    <OverlayStyle {...props}>{contentElement}</OverlayStyle>
+                  )}
+                // shouldCloseOnEsc={false}
+                // shouldCloseOnOverlayClick={false}
+                >
+                  {
+                    !deleting ? 
+                    <>
+                      <h1>Are you sure you want to delete this post?</h1>
+                      <div>
+                        <CancelDelete onClick={toggleModal}>No, go back</CancelDelete>
+                        <ConfirmDelete onClick={sendDeletePost}>Yes, delete it</ConfirmDelete>
+                      </div>
+                    </>
+                    :
+                    <h1>LOADING</h1>
+                  }
+                </Modal>
               </>
               :
               <></>
@@ -348,6 +382,73 @@ export default function PostComponent(props) {
       </Post>
   )
 }
+
+const ModalStyle = styled.div`
+  /* min-height: 18rem; */
+  /* margin: 2rem; */
+  /* padding: 2.5rem; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #333333;
+  border-radius: 50px;
+  border: none;
+  width: 597px;
+  height: 262px;
+  align-items: center;
+  h1 {
+    width: 350px;
+    margin-top: 38px;
+    text-align: center;
+    font-family: Lato;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 34px;
+    line-height: 41px;
+    color: #FFFFFF;
+  }
+  div {
+    margin-bottom: 66px;
+    width: 295px;
+    display: flex;
+    justify-content: space-between;
+    button {
+      width: 134px;
+      height: 37px;
+      border-radius: 5px;
+      border: none;
+      
+      font-family: Lato;
+      font-style: normal;
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 22px;
+    }
+  }
+`;
+
+const ConfirmDelete = styled.button`
+background-color: #1877F2;
+color: #FFFFFF;
+`
+
+const CancelDelete = styled.button`
+background-color: #FFFFFF;
+color: #1877F2;
+`
+
+const OverlayStyle = styled.div`
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 3500;
+  background: rgba(255, 255, 255, 0.9);
+`;
 
 const Post = styled.article`
 display: flex;
