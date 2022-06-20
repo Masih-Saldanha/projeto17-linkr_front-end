@@ -19,7 +19,6 @@ function App() {
     const URL = "https://projeto17-linkr.herokuapp.com/posts";
     const config = {
       headers: {
-        // FIXME: ADICIONAR TOKEN AQUI
         Authorization: `Bearer ${token}`
       }
     };
@@ -27,13 +26,11 @@ function App() {
     promise.then(response => {
       const { data } = response;
       setPostList(data);
-      console.log(postList);
       setLoadingPosts(false);
     });
     promise.catch(error => {
       const { response } = error;
       const { data } = response;
-      console.log(postList);
       alert("An error ocurred while trying to fetch the posts, please refresh the page");
       setLoadingPosts(false);
     });

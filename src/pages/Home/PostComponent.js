@@ -21,11 +21,10 @@ export default function PostComponent(props) {
   const decoded = jwtDecode(token);
   const config = {
     headers: {
-      // FIXME: ADICIONAR TOKEN AQUI
       Authorization: `Bearer ${token}`
     }
   };
-  // console.log(decoded.id);
+  
   const inputRef = useRef();
   Modal.setAppElement("#root");
 

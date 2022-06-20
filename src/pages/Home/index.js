@@ -44,87 +44,13 @@ function Home() {
     }
   }
 
-  function getHashtags(description) {
-
-    if ( description === null || description === undefined ) return '';
-    
-    let palavra = "";
-    let aux = 0;
-    const hashtagPositions = [];
-
-    for (let i = 0; i < description.length; i++) {
-      palavra = '';
-      for (let j = i + 1; j < description.length; j++) {
-        if (description[i]==='#' && description[j]!=='#' && description[j]!==' ') {
-          palavra += description[j];
-        } else {
-          break;
-        }
-        aux = j;
-      }
-      if (palavra !== '') {
-        hashtagPositions.push(i);
-      }
-      i === aux;
-    }
-
-    let frase = description;
-
-    let frase_final = '';
-
-    for (let i = 0; i < hashtagPositions.length; i++) {
-
-      if (i === 0) {
- 
-        if (description.substring(0, hashtagPositions[i])[0] === "#") {
-          frase_final += createLink(description.substring(0, hashtagPositions[i]) )
-        } else {
-          frase_final += description.substring(0, hashtagPositions[i])
-        }
-
-        if ( description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#" ) {
-          frase_final += createLink ( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
-        } else {
-          frase_final += description.substring( hashtagPositions[i], hashtagPositions[i + 1] );
-        }
-
-      } else if (i === hashtagPositions.length - 1) {
-        frase_final +=  createLink( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
-
-      } else {
-        if ( description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#" ) {
-          frase_final += createLink( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
-        } else {
-          frase_final += description.substring( hashtagPositions[i],  hashtagPositions[i + 1] )
-        }
-
-        if ( frase.substring( hashtagPositions[i + 1], hashtagPositions[i + 2]  )[0] === "#"  ) {
-          frase_final += createLink( frase.substring(hashtagPositions[i + 1], hashtagPositions[i + 2]) )
-        } else {
-          frase_final += frase.substring( hashtagPositions[i + 1], hashtagPositions[i + 2] );
-        }
-
-        i++;
-      }
-    }
-    return frase_final;
-  }
-
-  function createLink(hash){
-    let hashtag = hash.replace('#','').trim();
-    console.log(hashtag);
-    return  '<a href="/hashtag/'+hashtag+'"> <strong>' + hash +'</strong> </a>'
-  }
-
   return (
     <>
       <Header toggle={toggle} setToggle={setToggle} />
       <Main>
-        {/* FIXME: AQUI ENTRAR A SIDE COM HASHTAGS */}
         <Timeline>
           <TimelineTitle
             onClick={() => {
-              // AQUI É PARA TESTES FÁCEIS:
               getPosts(token);
             }}
           >timeline</TimelineTitle>
