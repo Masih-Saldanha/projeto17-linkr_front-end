@@ -19,8 +19,8 @@ export default function UserPage() {
     const [render, setRender] = useState(false);
     const [loading, setLoading] = useState(true);
     const { token } = useContext(AuthContext);
-
-    const config = {
+    
+     const config = {
         headers: {
             Authorization: `Bearer ${token}`
         }

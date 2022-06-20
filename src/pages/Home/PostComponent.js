@@ -1,37 +1,65 @@
 import styled from 'styled-components';
 import axios from 'axios';
-import {useState} from 'react';
+import {useState, useContext} from 'react';
+import { AuthContext } from '../../contexts/AuthContext';
 import { IoHeartOutline, IoHeart } from 'react-icons/io5';
+
+// const URL_API = `https://projeto17-linkr.herokuapp.com`;
+const URL_API = `http://localhost:4000`;
 
 export default function PostComponent(props) {
 
+    const { token } = useContext(AuthContext);
     const [liked, setLiked] = useState(false);
+    const [count, setCount] = useState(0);
     const {post, index, userInfos} = props;
 
+    let countNotState = '';
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+
     function defineParametersForLikeButton(likedByUser, postId) {
-        if (likedByUser) {
-            return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
-        } else {
-            return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked'/>;
+
+        if (likedByUser && count === 0) return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
+        if (!likedByUser && count === 0) return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked'/>;
+
+        if (count > 0) {
+            if (liked) {
+                countNotState = 1;
+                return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
+            }
+            else {
+                countNotState = -1;
+                return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked'/>;
+            }
         }
     }
 
-//TODO: preciso terminar a lógica de inserir o like no front depois de ter feito a requisição
+    function countLikes(likes, countNotState) {
+        if (countNotState == '') return likes;
+        if (countNotState == 1) return (Number(likes) + 1);
+        if (countNotState == -1) return (Number(likes) === 0 ? 0 : (Number(likes) - 1));
+    }
+
     async function insertLike(postId) {
-        //TODO: Não terminei a função
-        await axios.post(`${URL_API}/like/${postId}`)
+        await axios.post(`${URL_API}/like/${postId}`, {}, config)
         .then(response => {
-            console.log('Curitada dada');
+            setCount(count + 1);
+            setLiked(true);
         }).catch(err => {
             console.log('Erro', err);
         })
       }
     
       async function deleteLike(postId) {
-        //TODO: Não terminei a função
-        await axios.delete(`${URL_API}/like/${postId}`)
+        await axios.delete(`${URL_API}/like/${postId}`, config)
         .then(response => {
-            console.log('Curitada dada');
+            setCount(count + 1);
+            setLiked(false);
         }).catch(err => {
             console.log('Erro', err);
         })
@@ -41,9 +69,8 @@ export default function PostComponent(props) {
         <Post key={index}>
             <PostLeftSide>
                 <UserPicture src={userInfos.pictureUrl} />
-                {post.link.likedByUser === false ? <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>
-                : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
-                <p>{post.likes} likes</p>
+                {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
+                <p>{countLikes(post.likes, countNotState)} likes</p>
             </PostLeftSide>
             <PostRightSide>
             <h1>{userInfos.username}</h1>
