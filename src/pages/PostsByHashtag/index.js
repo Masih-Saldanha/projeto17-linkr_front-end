@@ -1,9 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { IoMdCreate, IoMdTrash } from 'react-icons/io';
 import axios from 'axios';
-import { IoHeartOutline, IoHeart } from 'react-icons/io5';
 
 import Header from './../../components/Header';
 import { AuthContext } from '../../contexts/AuthContext';

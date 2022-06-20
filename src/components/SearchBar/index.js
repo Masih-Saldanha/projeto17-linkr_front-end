@@ -1,10 +1,25 @@
 import styled from 'styled-components';
+import axios from 'axios';
+import { useState } from 'react';
 import { IoSearchOutline } from 'react-icons/io5';
 
 export default function SearchBar() {
+
+    const [value, setValue] = useState('');
+
+    async function handleSearchEvent(e) {
+        e.preventDefault();
+        setValue(e.target.value);
+        if (e.target.value.length >= 3) {
+            await axios.get(`${URL_API}/search/${e.target.value}`)
+                .then()
+                .catch()
+        }
+    }
+
     return (
         <Input>
-            <input type="text" placeholder="search"></input>
+            <input type="text" placeholder="search" onChange={e => handleSearchEvent(e)}></input>
             <IoSearchOutline />
         </Input>
     )
