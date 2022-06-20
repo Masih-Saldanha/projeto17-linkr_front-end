@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 import {useState, useContext} from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
 import { IoHeartOutline, IoHeart } from 'react-icons/io5';
@@ -13,6 +14,7 @@ export default function PostComponent(props) {
     const [liked, setLiked] = useState(false);
     const [count, setCount] = useState(0);
     const {post, index, userInfos} = props;
+    const navigate = useNavigate();
 
     let countNotState = '';
 
@@ -73,7 +75,7 @@ export default function PostComponent(props) {
                 <p>{countLikes(post.likes, countNotState)} likes</p>
             </PostLeftSide>
             <PostRightSide>
-            <h1>{userInfos.username}</h1>
+            <h1 onClick={() => navigate(`/user/${post.userId}`)}>{userInfos.username}</h1>
             <h2>{post.description}</h2>
             <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
                 <Link>
@@ -161,6 +163,10 @@ h1 {
   line-height: 20px;
   color: #FFFFFF;
   margin-bottom: 7px;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 h2 {
   font-family: Lato;
