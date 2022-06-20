@@ -38,6 +38,7 @@ export default function PostComponent(props) {
   const [count, setCount] = useState(0);
   const [likesHover, setLikesHover] = useState([]);
   const [userLikedState, setUserLikedState] = useState(null);
+  const [text, setText] = useState(null);
 
   let countNotState = '';
 
