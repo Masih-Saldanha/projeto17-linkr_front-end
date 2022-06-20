@@ -4,14 +4,17 @@ import styled from "styled-components";
 import axios from "axios";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
+import {DebounceInput} from 'react-debounce-input';
 
 import useAuth from "../../hooks/useAuth";
 import { AuthContext } from "../../contexts/AuthContext";
+import SearchBar from "../SearchBar";
  
 function Header(props) {
         const { signOut, image } = useAuth();
         const { toggle, setToggle } = props;
         const navigate = useNavigate();
+        const [value, setValue] = useState('');
 
         const [userPicture, setUserPicture] = useState("");
         const { token } = useContext(AuthContext);
@@ -19,6 +22,12 @@ function Header(props) {
         useEffect(() => {
           getUserPicture();
         }, []);
+
+        function handleSearchEvent(event) {
+            e.preventDefault();
+            setValue(event.target.value);
+            console.log(value);
+        }
       
         function getUserPicture() {
           // ta feio assim pra evitar conflito no back com /user/:id
@@ -49,6 +58,12 @@ function Header(props) {
                 <>
                         <Container>
                                 <h1>linkr</h1>
+                                <DebounceInput 
+                                element={SearchBar}
+                                minLength={3}
+                                debounceTimeout={300}
+                                value={value} 
+                                onChange={e => handleSearchEvent(e)}/>
                                 <div onClick={() => setToggle(!toggle)}>
                                         {toggle ? (
                                                 <IoIosArrowUp color="#FFFFFF" size={18} strokeWidth="5" />
