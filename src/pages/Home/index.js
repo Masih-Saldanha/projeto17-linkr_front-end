@@ -9,6 +9,7 @@ import PostContext from '../../contexts/postContext';
 import Header from './../../components/Header';
 import { IoHeartOutline, IoHeart } from 'react-icons/io5';
 import { AuthContext } from '../../contexts/AuthContext';
+import Trending from "../../components/Trending";
 
 const URL_API = `https://projeto17-linkr.herokuapp.com`;
 
@@ -43,7 +44,7 @@ function Home() {
                 <EditIcon><IoMdCreate /></EditIcon>
                 <DeleteIcon><IoMdTrash /></DeleteIcon>
                 <h1 onClick={() => navigate(`/user/${post.userId}`)}>{post.username}</h1>
-                <h2>{post.description}</h2>
+                <h2 dangerouslySetInnerHTML={{ __html: getHashtags(post.description) }}></h2>
                 <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
                   <Link>
                     <div>
@@ -60,6 +61,78 @@ function Home() {
         })
       )
     }
+  }
+
+  function getHashtags(description) {
+
+    if ( description === null || description === undefined ) return '';
+    
+    let palavra = "";
+    let aux = 0;
+    const hashtagPositions = [];
+
+    for (let i = 0; i < description.length; i++) {
+      palavra = '';
+      for (let j = i + 1; j < description.length; j++) {
+        if (description[i]==='#' && description[j]!=='#' && description[j]!==' ') {
+          palavra += description[j];
+        } else {
+          break;
+        }
+        aux = j;
+      }
+      if (palavra !== '') {
+        hashtagPositions.push(i);
+      }
+      i === aux;
+    }
+
+    let frase = description;
+
+    let frase_final = '';
+
+    for (let i = 0; i < hashtagPositions.length; i++) {
+
+      if (i === 0) {
+ 
+        if (description.substring(0, hashtagPositions[i])[0] === "#") {
+          frase_final += createLink(description.substring(0, hashtagPositions[i]) )
+        } else {
+          frase_final += description.substring(0, hashtagPositions[i])
+        }
+
+        if ( description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#" ) {
+          frase_final += createLink ( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
+        } else {
+          frase_final += description.substring( hashtagPositions[i], hashtagPositions[i + 1] );
+        }
+
+      } else if (i === hashtagPositions.length - 1) {
+        frase_final +=  createLink( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
+
+      } else {
+        if ( description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#" ) {
+          frase_final += createLink( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
+        } else {
+          frase_final += description.substring( hashtagPositions[i],  hashtagPositions[i + 1] )
+        }
+
+        if ( frase.substring( hashtagPositions[i + 1], hashtagPositions[i + 2]  )[0] === "#"  ) {
+          frase_final += createLink( frase.substring(hashtagPositions[i + 1], hashtagPositions[i + 2]) )
+        } else {
+          frase_final += frase.substring( hashtagPositions[i + 1], hashtagPositions[i + 2] );
+        }
+
+        i++;
+      }
+    }
+    return frase_final;
+  }
+
+  function createLink(hash){
+    let hashtag = hash.replace('#','').trim();
+    console.log(hashtag);
+    return  '<a href="/hashtag/'+hashtag+'"> <strong>' + hash +'</strong> </a>'
   }
 
   return (
@@ -116,6 +189,7 @@ function Home() {
           <PublishPost></PublishPost>
           {renderPosts()}
         </Timeline>
+        <Trending/>
       </Main>
     </>
   )
@@ -229,6 +303,14 @@ h2 {
   line-height: 18px;
   color: #B7B7B7;
   margin-bottom: 13px;
+}
+
+strong{
+  color: #B7B7B7;
+}
+
+a {
+  color: #B7B7B7;
 }
 `
 
