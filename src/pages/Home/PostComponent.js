@@ -11,7 +11,7 @@ import { IoHeartOutline, IoHeart } from 'react-icons/io5';
 import { AuthContext } from '../../contexts/AuthContext';
 
 // const URL_API = `https://projeto17-linkr.herokuapp.com`;
-const URL_API = `http://localhost:4000`;
+const URL_API = `https://projeto17-linkr.herokuapp.com`;
 
 export default function PostComponent(props) {
   const { post, index, userInfos } = props;
