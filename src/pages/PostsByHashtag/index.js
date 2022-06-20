@@ -8,6 +8,7 @@ import { IoHeartOutline, IoHeart } from 'react-icons/io5';
 import Header from './../../components/Header';
 import { AuthContext } from '../../contexts/AuthContext';
 import Trending from "../../components/Trending";
+import PostComponent from '../Home/PostComponent';
 
 
 function PostsByHashTag() {
@@ -29,26 +30,6 @@ function PostsByHashTag() {
     promise.catch((err) => console.log(err));
   },[hashtag]);
 
-  async function insertLike(postId) {
-    //TODO: Não terminei a função
-    await axios.post(`${URL_API}/like/${postId}`)
-    .then(response => {
-        console.log('Curitada dada');
-    }).catch(err => {
-        console.log('Erro', err);
-    })
-  }
-
-  async function deleteLike(postId) {
-    //TODO: Não terminei a função
-    await axios.delete(`${URL_API}/like/${postId}`)
-    .then(response => {
-        console.log('Curitada dada');
-    }).catch(err => {
-        console.log('Erro', err);
-    })
-  }
-
   function renderPosts() {
     if (postList.length === 0) {
       return (
@@ -58,105 +39,11 @@ function PostsByHashTag() {
       return (
         postList.map((post, index) => {
           return (
-            <Post key={index}>
-              <PostLeftSide>
-                <UserPicture src={post.pictureUrl} />
-                {post.link.likedByUser === false ? <IoHeartOutline onClick={() => insertLike(post.postId)} className='not-liked'/>
-                : <IoHeart onClick={() => deleteLike(post.postId)} className='liked' />}
-                <p>{post.likes} likes</p>
-              </PostLeftSide>
-              <PostRightSide>
-                <EditIcon><IoMdCreate /></EditIcon>
-                <DeleteIcon><IoMdTrash /></DeleteIcon>
-                <h1 onClick={() => navigate(`/user/${post.userId}`)}>{post.username}</h1>
-                <h2 dangerouslySetInnerHTML={{ __html: getHashtags(post.description) }}></h2>
-                <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
-                  <Link>
-                    <div>
-                      <h3>{post.link.linkTitle}</h3>
-                      <h4>{post.link.linkDescription}</h4>
-                      <h5>{post.link.linkUrl}</h5>
-                    </div>
-                    <img src={`${post.link.linkImage}`} />
-                  </Link>
-                </a>
-              </PostRightSide>
-            </Post>
+            <PostComponent post={post} index={index} />
           )
         })
       )
     }
-  }
-
-  function getHashtags(description) {
-
-    if ( description === null || description === undefined ) return '';
-    
-    let palavra = "";
-    let aux = 0;
-    const hashtagPositions = [];
-
-    for (let i = 0; i < description.length; i++) {
-      palavra = '';
-      for (let j = i + 1; j < description.length; j++) {
-        if (description[i]==='#' && description[j]!=='#' && description[j]!==' ') {
-          palavra += description[j];
-        } else {
-          break;
-        }
-        aux = j;
-      }
-      if (palavra !== '') {
-        hashtagPositions.push(i);
-      }
-      i === aux;
-    }
-
-    let frase = description;
-
-    let frase_final = '';
-
-    for (let i = 0; i < hashtagPositions.length; i++) {
-
-      if (i === 0) {
- 
-        if (description.substring(0, hashtagPositions[i])[0] === "#") {
-          frase_final += createLink(description.substring(0, hashtagPositions[i]) )
-        } else {
-          frase_final += description.substring(0, hashtagPositions[i])
-        }
-
-        if ( description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#" ) {
-          frase_final += createLink ( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
-        } else {
-          frase_final += description.substring( hashtagPositions[i], hashtagPositions[i + 1] );
-        }
-
-      } else if (i === hashtagPositions.length - 1) {
-        frase_final +=  createLink( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
-
-      } else {
-        if ( description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#" ) {
-          frase_final += createLink( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
-        } else {
-          frase_final += description.substring( hashtagPositions[i],  hashtagPositions[i + 1] )
-        }
-
-        if ( frase.substring( hashtagPositions[i + 1], hashtagPositions[i + 2]  )[0] === "#"  ) {
-          frase_final += createLink( frase.substring(hashtagPositions[i + 1], hashtagPositions[i + 2]) )
-        } else {
-          frase_final += frase.substring( hashtagPositions[i + 1], hashtagPositions[i + 2] );
-        }
-
-        i++;
-      }
-    }
-    return frase_final;
-  }
-
-  function createLink(hash){
-    let hashtag = hash.replace('#','').trim();
-    return  '<a href="/hashtag/'+hashtag+'"> <strong>' + hash +'</strong> </a>'
   }
 
   return (

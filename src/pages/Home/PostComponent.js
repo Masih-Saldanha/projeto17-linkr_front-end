@@ -36,11 +36,80 @@ export default function PostComponent(props) {
   const [newDescription, setNewDescription] = useState(post.description);
   const [liked, setLiked] = useState(false);
   const [count, setCount] = useState(0);
-  const [likesHover, setLikesHover] = useState([]);
-  const [userLikedState, setUserLikedState] = useState(null);
   const [text, setText] = useState(null);
 
   let countNotState = '';
+
+  function getHashtags(description) {
+
+    if ( description === null || description === undefined ) return '';
+    
+    let palavra = "";
+    let aux = 0;
+    const hashtagPositions = [];
+
+    for (let i = 0; i < description.length; i++) {
+      palavra = '';
+      for (let j = i + 1; j < description.length; j++) {
+        if (description[i]==='#' && description[j]!=='#' && description[j]!==' ') {
+          palavra += description[j];
+        } else {
+          break;
+        }
+        aux = j;
+      }
+      if (palavra !== '') {
+        hashtagPositions.push(i);
+      }
+      i === aux;
+    }
+
+    let frase = description;
+
+    let frase_final = '';
+
+    for (let i = 0; i < hashtagPositions.length; i++) {
+
+      if (i === 0) {
+ 
+        if (description.substring(0, hashtagPositions[i])[0] === "#") {
+          frase_final += createLink(description.substring(0, hashtagPositions[i]) )
+        } else {
+          frase_final += description.substring(0, hashtagPositions[i])
+        }
+
+        if ( description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#" ) {
+          frase_final += createLink ( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
+        } else {
+          frase_final += description.substring( hashtagPositions[i], hashtagPositions[i + 1] );
+        }
+
+      } else if (i === hashtagPositions.length - 1) {
+        frase_final +=  createLink( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
+
+      } else {
+        if ( description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#" ) {
+          frase_final += createLink( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
+        } else {
+          frase_final += description.substring( hashtagPositions[i],  hashtagPositions[i + 1] )
+        }
+
+        if ( frase.substring( hashtagPositions[i + 1], hashtagPositions[i + 2]  )[0] === "#"  ) {
+          frase_final += createLink( frase.substring(hashtagPositions[i + 1], hashtagPositions[i + 2]) )
+        } else {
+          frase_final += frase.substring( hashtagPositions[i + 1], hashtagPositions[i + 2] );
+        }
+
+        i++;
+      }
+    }
+    return frase_final;
+  }
+
+  function createLink(hash){
+    let hashtag = hash.replace('#','').trim();
+    return  '<a href="/hashtag/'+hashtag+'"> <strong>' + hash +'</strong> </a>'
+  }
 
   function countLikes(likes, countNotState) {
     if (countNotState == '') return likes;
@@ -220,7 +289,7 @@ export default function PostComponent(props) {
       :
       <Post key={index}>
         <PostLeftSide>
-          <UserPicture src={userInfos.pictureUrl} />
+          <UserPicture src={userInfos ? userInfos.pictureUrl : post.pictureUrl} />
           {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
           <p data-tip="" data-for={`${post.postId}`} onMouseOver={() => getLikesOnHover(post.postId)}>{countLikes(post.likes, countNotState)} likes</p>
           {text ?
@@ -239,7 +308,7 @@ export default function PostComponent(props) {
               :
               <></>
           }
-          <h1 onClick={() => navigate(`/user/${post.userId}`)}>{userInfos.username}</h1>
+          <h1 onClick={() => navigate(`/user/${post.userId}`)}>{userInfos ? userInfos.username : post.username}</h1>
           {
             editing === false ?
               <h2>{originalDescription}</h2>
