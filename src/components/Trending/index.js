@@ -7,7 +7,7 @@ import Hashtag from "./../Hashtag";
 
 
 function Trending() {
-  const [hashtags, setHashtags] = useState([""]);
+  const [hashtags, setHashtags] = useState([]);
   const { token } = useContext(AuthContext);
 
   useEffect(() => {
@@ -20,13 +20,16 @@ function Trending() {
 
     const promise = axios.get(URL, CONFIG);
 
-    promise.then((promise) => setHashtags([...promise.data]));
+    promise.then((promise) => {
+      setHashtags([...promise.data]);
+    });
     promise.catch((err) => console.log(err));
   }, []);
 
   return (
     <Section>
       <Title>trending</Title>
+      {console.log(hashtags)}
       {hashtags?.map((tag, index) => {
         return(
             <Hashtag key={index} hashtag={tag.hashtag} />
@@ -45,7 +48,7 @@ const Section = styled.section`
   background-color: #171717;
   border-radius: 16px;
   position: sticky;
-  top: 210px;
+  top: 160px;
 
   @media (max-width: 611px) {
     display: none;
