@@ -57,7 +57,7 @@ function Header(props) {
         return (
                 <>
                         <Container>
-                                <h1>linkr</h1>
+                                <h1 onClick={() => navigate('/timeline')}>linkr</h1>
                                 <DebounceInput 
                                 element={SearchBar}
                                 minLength={3}
@@ -99,6 +99,10 @@ const Container = styled.header`
                 font-family: "Passion One", cursive;
                 font-size: 49px;
                 font-weight: 700;
+
+                &:hover{
+                    cursor: pointer;
+                }
         }
         div {
                 display: flex;

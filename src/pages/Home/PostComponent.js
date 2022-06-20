@@ -1,93 +1,283 @@
 import styled from 'styled-components';
 import axios from 'axios';
-import {useState, useContext} from 'react';
-import { AuthContext } from '../../contexts/AuthContext';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ReactTooltip from 'react-tooltip';
+import jwtDecode from 'jwt-decode';
+
+import { IoMdCreate, IoMdTrash } from 'react-icons/io';
 import { IoHeartOutline, IoHeart } from 'react-icons/io5';
+import { AuthContext } from '../../contexts/AuthContext';
 
 // const URL_API = `https://projeto17-linkr.herokuapp.com`;
 const URL_API = `http://localhost:4000`;
 
 export default function PostComponent(props) {
+  const { post, index, userInfos } = props;
 
-    const { token } = useContext(AuthContext);
-    const [liked, setLiked] = useState(false);
-    const [count, setCount] = useState(0);
-    const {post, index, userInfos} = props;
+  const navigate = useNavigate();
+  const { token } = useContext(AuthContext);
+  const decoded = jwtDecode(token);
+  const config = {
+    headers: {
+      // FIXME: ADICIONAR TOKEN AQUI
+      Authorization: `Bearer ${token}`
+    }
+  };
+  // console.log(decoded.id);
+  const inputRef = useRef();
 
-    let countNotState = '';
+  // States:
 
-    const config = {
-        headers: {
-            Authorization: `Bearer ${token}`
+  const [deleted, setDeleted] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [enableEdit, setEnableEdit] = useState(true);
+  const [originalDescription, setOriginalDescription] = useState(post.description);
+  const [newDescription, setNewDescription] = useState(post.description);
+  const [liked, setLiked] = useState(false);
+  const [count, setCount] = useState(0);
+  const [likesHover, setLikesHover] = useState([]);
+  const [userLikedState, setUserLikedState] = useState(null);
+  const [text, setText] = useState(null);
+
+  let countNotState = '';
+
+  function countLikes(likes, countNotState) {
+    if (countNotState == '') return likes;
+    if (countNotState == 1) return (Number(likes) + 1);
+    if (countNotState == -1) return (Number(likes) === 0 ? 0 : (Number(likes) - 1));
+  }
+
+  async function insertLike(postId) {
+    await axios.post(`${URL_API}/like/${postId}`, {}, config)
+      .then(response => {
+        setCount(count + 1);
+        setLiked(true);
+      }).catch(err => {
+        console.log('Erro', err);
+      })
+  }
+
+  async function deleteLike(postId) {
+    await axios.delete(`${URL_API}/like/${postId}`, config)
+      .then(response => {
+        setCount(count + 1);
+        setLiked(false);
+      }).catch(err => {
+        console.log('Erro', err);
+      })
+  }
+
+  async function getLikesOnHover(postId) {
+    await axios.get(`${URL_API}/like/${postId}`, config)
+      .then(async (response) => {
+        const { likes, userLiked } = response.data;
+        const arrOfLikes = likes.map(like => like.username);
+        // await setLikesHover([...arrOfLikes]);
+        // await setUserLikedState(userLiked ? true : false);
+        // setText(hoverControl(likesHover, userLiked));
+        setText(hoverControl(arrOfLikes, userLiked));
+      }).catch(err => {
+        console.log('Erro', err);
+      })
+  }
+
+  function defineParametersForLikeButton(likedByUser, postId) {
+
+    if (likedByUser && count === 0) return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
+    if (!likedByUser && count === 0) return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked' />;
+
+    if (count > 0) {
+      if (liked) {
+        countNotState = 1;
+        return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
+      }
+      else {
+        countNotState = -1;
+        return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked' />;
+      }
+    }
+  };
+
+  function hoverControl(arr, bool) {
+    const users = arr.length;
+
+    if (users === 0) return 'Seja o primeiro a dar like!';
+
+    if (users === 1) {
+      if (bool) {
+        return 'Você gostou disso';
+      } else {
+        return `${arr.join(' ')} gostou disso`;
+      }
+    }
+
+    if (users <= 3) {
+      if (bool) {
+        return `Você, ${arr.join(', ')} gostaram disso`;
+      } else {
+        return `${arr.join(', ')} gostaram disso`;
+      }
+    }
+
+    if (users > 3) {
+      if (bool) {
+        return `Você, ${arr.splice(0, 1).join(', ')} e mais ${users - 2} pessoas gostaram disso`;
+      } else {
+        return `${arr.splice(0, 2).join(', ')} e mais ${users - 2} pessoas gostaram disso`;
+      }
+    }
+  }
+
+  useEffect(() => {
+    // console.log(inputRef.current)
+    if (inputRef.current) {
+      inputRef.current.focus();
+
+      const keyDownHandler = event => {
+        // console.log('User pressed: ', event.key);
+
+        if (event.key === 'Escape') {
+          event.preventDefault();
+
+          // 👇️ your logic here
+          escPressed();
         }
+      };
+
+      document.addEventListener('keydown', keyDownHandler);
+
+      // 👇️ clean up event listener
+      return () => {
+        document.removeEventListener('keydown', keyDownHandler);
+      };
     };
+  }, [editing])
 
-    function defineParametersForLikeButton(likedByUser, postId) {
+  const escPressed = () => {
+    setEditing(false);
+    setNewDescription(originalDescription);
+    // console.log('pressed Esc ✅');
+  };
 
-        if (likedByUser && count === 0) return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
-        if (!likedByUser && count === 0) return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked'/>;
+  function editPost(postId) {
+    // console.log(`Edit post: ${postId}`);
 
-        if (count > 0) {
-            if (liked) {
-                countNotState = 1;
-                return <IoHeart onClick={() => deleteLike(postId)} className='liked' />;
-            }
-            else {
-                countNotState = -1;
-                return <IoHeartOutline onClick={() => insertLike(postId)} className='not-liked'/>;
-            }
-        }
+    if (!editing) {
+      setEditing(true);
+    } else {
+      setEditing(false);
+      setNewDescription(originalDescription);
     }
+  }
 
-    function countLikes(likes, countNotState) {
-        if (countNotState == '') return likes;
-        if (countNotState == 1) return (Number(likes) + 1);
-        if (countNotState == -1) return (Number(likes) === 0 ? 0 : (Number(likes) - 1));
+  function sendEditPost(e) {
+    e.preventDefault();
+    setEnableEdit(false);
+    const metaNewDescription = { description: newDescription };
+    // console.log(`${URL_API}/posts/${post.postId}`, metaNewDescription, config)
+    const promise = axios.put(`${URL_API}/posts/${post.postId}`, metaNewDescription, config);
+    promise.then(response => {
+      console.log(response.data);
+      setOriginalDescription(metaNewDescription.description);
+      // setEdited(true);
+      setEditing(false);
+      setEnableEdit(true);
+    });
+    promise.catch(error => {
+      console.log(error.response.data);
+      alert("Não foi possível alterar o comentário");
+      setEnableEdit(true);
+    });
+  }
+
+  function deletePost(postId) {
+    console.log(`Delete post: ${postId}`);
+    let input = window.confirm("Deseja apagar esse post?");
+    if (input) {
+      // setDeleting(true);
+      sendDeletePost(postId);
     }
+  }
 
-    async function insertLike(postId) {
-        await axios.post(`${URL_API}/like/${postId}`, {}, config)
-        .then(response => {
-            setCount(count + 1);
-            setLiked(true);
-        }).catch(err => {
-            console.log('Erro', err);
-        })
-      }
-    
-      async function deleteLike(postId) {
-        await axios.delete(`${URL_API}/like/${postId}`, config)
-        .then(response => {
-            setCount(count + 1);
-            setLiked(false);
-        }).catch(err => {
-            console.log('Erro', err);
-        })
-      }
+  function sendDeletePost(postId) {
+    const promise = axios.delete(`${URL_API}/posts/${postId}`, config);
+    promise.then(response => {
+      console.log(response.data);
+      // setDeleting(false);
+      setDeleted(true);
+    });
+    promise.catch(error => {
+      console.log(error.response.data);
+      // setDeleting(false);
+    });
+  }
 
-    return (
-        <Post key={index}>
-            <PostLeftSide>
-                <UserPicture src={userInfos.pictureUrl} />
-                {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
-                <p>{countLikes(post.likes, countNotState)} likes</p>
-            </PostLeftSide>
-            <PostRightSide>
-            <h1>{userInfos.username}</h1>
-            <h2>{post.description}</h2>
-            <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
-                <Link>
-                    <div>
-                        <h3>{post.link.linkTitle}</h3>
-                        <h4>{post.link.linkDescription}</h4>
-                        <h5>{post.link.linkUrl}</h5>
-                    </div>
-                    <img src={`${post.link.linkImage}`} />
-                </Link>
-            </a>
-            </PostRightSide>
-        </Post>
-    )
+  return (
+
+    deleted ?
+      <></>
+      :
+      <Post key={index}>
+        <PostLeftSide>
+          <UserPicture src={userInfos.pictureUrl} />
+          {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
+          <p data-tip="" data-for={`${post.postId}`} onMouseOver={() => getLikesOnHover(post.postId)}>{countLikes(post.likes, countNotState)} likes</p>
+          {text ?
+            <ReactTooltip id={`${post.postId}`} place="bottom">
+              {text}
+            </ReactTooltip> :
+            <></>}
+        </PostLeftSide>
+        <PostRightSide>
+          {
+            post.userId === decoded.id ?
+              <>
+                <EditIcon onClick={() => editPost(post.postId)}><IoMdCreate /></EditIcon>
+                <DeleteIcon onClick={() => deletePost(post.postId)}><IoMdTrash /></DeleteIcon>
+              </>
+              :
+              <></>
+          }
+          <h1 onClick={() => navigate(`/user/${post.userId}`)}>{userInfos.username}</h1>
+          {
+            editing === false ?
+              <h2>{originalDescription}</h2>
+              :
+              enableEdit ?
+                <form onSubmit={sendEditPost}>
+                  <input
+                    ref={inputRef}
+                    type="textarea"
+                    value={newDescription}
+                    onChange={(e) => setNewDescription(e.target.value)}
+                  />
+                </form>
+                :
+                <form onSubmit={sendEditPost}>
+                  <input
+                    ref={inputRef}
+                    type="textarea"
+                    value={newDescription}
+                    onChange={(e) => setNewDescription(e.target.value)}
+                    disabled
+                  />
+                </form>
+          }
+
+          <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
+            <Link>
+              <div>
+                <h3>{post.link.linkTitle}</h3>
+                <h4>{post.link.linkDescription}</h4>
+                <h5>{post.link.linkUrl}</h5>
+              </div>
+              <img src={`${post.link.linkImage}`} />
+            </Link>
+          </a>
+        </PostRightSide>
+      </Post>
+  )
 }
 
 const Post = styled.article`
@@ -161,6 +351,10 @@ h1 {
   line-height: 20px;
   color: #FFFFFF;
   margin-bottom: 7px;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 h2 {
   font-family: Lato;
@@ -170,6 +364,20 @@ h2 {
   line-height: 18px;
   color: #B7B7B7;
   margin-bottom: 13px;
+}
+input {
+  height: 44px;
+  border-radius: 7px;
+  border: none;
+  margin-bottom: 13px;
+  width: 100%;
+
+  font-family: Lato;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  color: #4C4C4C;
 }
 `
 

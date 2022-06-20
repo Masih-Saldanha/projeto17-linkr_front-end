@@ -51,11 +51,11 @@ function App() {
     >
       <BrowserRouter>
         <Routes>
-          <Route path='/hashtag/:hashtag' element={<PostsByHashtag />} />
-          <Route path='/' element={<SignIn />} />
-          <Route path='/signup' element={<SignUp />} />
-          <Route path='/timeline' element={<Home />} />
-          <Route path='/user/:id' element={<UserPage />} />
+          <Route exact path='/hashtag/:hashtag' element={<PostsByHashtag />} />
+          <Route exact path='/' element={<SignIn />} />
+          <Route exact path='/signup' element={<SignUp />} />
+          <Route exact path='/timeline' element={<Home />} />
+          <Route exact path='/user/:id' element={<UserPage />} />
         </Routes>
       </BrowserRouter>
     </PostContext.Provider>
