@@ -9,7 +9,8 @@ import { AuthContext } from '../../contexts/AuthContext';
 import Trending from '../../components/Trending';
 import PostComponent from './PostComponent';
 
-const URL_API = `https://projeto17-linkr.herokuapp.com`;
+// const URL_API = `https://projeto17-linkr.herokuapp.com`;
+const URL_API = 'http://localhost:4000';
 
 export default function UserPage() {
     const [toggle, setToggle] = useState(false);
@@ -18,8 +19,9 @@ export default function UserPage() {
     const [userInfos, setUserInfos] = useState({});
     const [render, setRender] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [loadingButton, setLoadingButton] = useState(false);
+    const [following, setFollowing] = useState(null);
     const { token } = useContext(AuthContext);
-    const [following, setFollowing] = useState(false);
     const decoded = jwtDecode(token);
     
      const config = {
@@ -31,6 +33,7 @@ export default function UserPage() {
     useEffect(() => {
         const promise = axios.get(`${URL_API}/user/${id}`, config);
         promise.then(response => {
+            setFollowing(response.data.followingAlready)
             setUserInfos(response.data);
             setLoading(false);
         })
@@ -53,6 +56,34 @@ export default function UserPage() {
         )
     }
 
+    function handleFollowRequest(followedId, followerId, followingAlready) {
+        setLoadingButton(true);
+
+        if (followingAlready) {
+            const promise = axios.post(`${URL_API}/follow`, {followedId, followerId}, config);
+            promise.then(() => {
+                setLoadingButton(false);
+                setFollowing(true);
+            });
+            promise.catch(err => {
+                console.log(err);
+                setLoadingButton(false);
+                alert('Não foi possível completar a sua requisição');
+            })
+        } else {
+            const promise = axios.post(`${URL_API}/unfollow`, {followedId, followerId}, config);
+            promise.then(() => {
+                setLoadingButton(false);
+                setFollowing(false);
+            });
+            promise.catch(err => {
+                console.log(err);
+                setLoadingButton(false);
+                alert('Não foi possível completar a sua requisição');
+            })
+        }
+    } 
+
     return loading === true ? (
         <>
           <NoPosts>Posts are loading</NoPosts>
@@ -67,11 +98,21 @@ export default function UserPage() {
             <HeadlineContainer>
                 <img src={userInfos.pictureUrl} />
                 <TimelineTitle>{userInfos.username}'s Posts</TimelineTitle>
-                {id === decoded.id ? <></> : <ButtonFollow following={true}>{1 == 2 ? 'Unfollow' : 'Follow'}</ButtonFollow> }
+                {id === decoded.id ? <></> : <ButtonFollow 
+                following={following}
+                onClick={() => handleFollowRequest(userInfos.id, decoded.id, following)}
+                disabled={loadingButton}
+                >
+                    {following === true ? 'Unfollow' : 'Follow'}
+                </ButtonFollow> }
             </HeadlineContainer>
             {userInfos.posts.length > 0 ? renderPosts() : <NoPosts>There are no posts yet</NoPosts>}
         </Timeline>
-        <Trending isUserPage={id === decoded.id ? true : false} isFollower={false} />
+        <Trending 
+        isUserPage={id === decoded.id ? true : false} 
+        isFollower={following} 
+        callbackIsFollower={setFollowing}
+        userPageId={userInfos.id} />
       </Main>
     </>
     )

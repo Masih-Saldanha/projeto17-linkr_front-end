@@ -1,17 +1,21 @@
 import axios from "axios";
 import React, { useState, useEffect, useContext } from "react";
 import styled from "styled-components";
+import jwtDecode from 'jwt-decode';
 
 import { AuthContext } from "../../contexts/AuthContext";
 import Hashtag from "./../Hashtag";
 
 
-function Trending({isUserPage, isFollower}) {
+function Trending({isUserPage, isFollower, callbackIsFollower, userPageId}) {
   const [hashtags, setHashtags] = useState([]);
   const { token } = useContext(AuthContext);
+  const [loadingButton, setLoadingButton] = useState(false);
+  const decoded = jwtDecode(token);
 
   useEffect(() => {
-    const URL = "https://projeto17-linkr.herokuapp.com/hashtag/trending";
+    // const URL = "https://projeto17-linkr.herokuapp.com/hashtag/trending";
+    const URL = 'http://localhost:4000'
     const CONFIG = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -26,9 +30,43 @@ function Trending({isUserPage, isFollower}) {
     promise.catch((err) => console.log(err));
   }, []);
 
+  function handleFollowRequest(followedId, followerId, followingAlready) {
+    setLoadingButton(true);
+
+    if (followingAlready) {
+        const promise = axios.post(`${URL}/follow`, {followedId, followerId}, config);
+        promise.then(() => {
+            setLoadingButton(false);
+            callbackIsFollower(true);
+        });
+        promise.catch(err => {
+            console.log(err);
+            setLoadingButton(false);
+            alert('Não foi possível completar o seu follow');
+        })
+    } else {
+        const promise = axios.post(`${URL}/unfollow`, {followedId, followerId}, config);
+        promise.then(() => {
+            setLoadingButton(false);
+            callbackIsFollower(false);
+        });
+        promise.catch(err => {
+            console.log(err);
+            setLoadingButton(false);
+            alert('Não foi possível completar o seu unfollow');
+        })
+    }
+} 
+
   return (
     <Container>
-        {isUserPage === true ? <ButtonFollow >{isFollower === true ? 'Unfollow' : 'Follow'}</ButtonFollow> : <></>}
+        {isUserPage === true ?
+        <ButtonFollow 
+        following={isFollower}
+        onClick={() => handleFollowRequest(userPageId, decoded.id, isFollower)}
+        disabled={loadingButton}>
+            {isFollower === true ? 'Unfollow' : 'Follow'}
+        </ButtonFollow> : <></>}
         <Section>
             <Title>trending</Title>
             {hashtags?.map((tag, index) => {
@@ -63,7 +101,7 @@ const Title = styled.div`
 `;
 
 const ButtonFollow = styled.button`
-background-color: ${1 === 2 ? '' : '#1877F2'};
+background-color: ${props => props.following === true ? 'white' : '#1877F2'};
 padding: 10px;
 border-radius: 5px;
 width: 112px;
@@ -73,7 +111,7 @@ margin-left: 200px;
 font-family: Lato;
 font-weight: 700;
 font-size: 100%;
-color: white; 
+color: ${props => props.following === true ? '#1877F2' : 'white'}; 
 
 &:hover {
     cursor: pointer;
