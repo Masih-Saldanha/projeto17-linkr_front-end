@@ -59,7 +59,7 @@ export default function UserPage() {
     function handleFollowRequest(followedId, followerId, followingAlready) {
         setLoadingButton(true);
 
-        if (followingAlready) {
+        if (!followingAlready) {
             const promise = axios.post(`${URL_API}/follow`, {followedId, followerId}, config);
             promise.then(() => {
                 setLoadingButton(false);
@@ -100,7 +100,7 @@ export default function UserPage() {
                 <TimelineTitle>{userInfos.username}'s Posts</TimelineTitle>
                 {id === decoded.id ? <></> : <ButtonFollow 
                 following={following}
-                onClick={() => handleFollowRequest(userInfos.id, decoded.id, following)}
+                onClick={() => handleFollowRequest(id, decoded.id, following)}
                 disabled={loadingButton}
                 >
                     {following === true ? 'Unfollow' : 'Follow'}
@@ -109,10 +109,10 @@ export default function UserPage() {
             {userInfos.posts.length > 0 ? renderPosts() : <NoPosts>There are no posts yet</NoPosts>}
         </Timeline>
         <Trending 
-        isUserPage={id === decoded.id ? true : false} 
+        isUserPage={true} 
         isFollower={following} 
         callbackIsFollower={setFollowing}
-        userPageId={userInfos.id} />
+        userPageId={id} />
       </Main>
     </>
     )

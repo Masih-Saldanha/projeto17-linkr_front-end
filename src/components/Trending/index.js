@@ -12,15 +12,16 @@ function Trending({isUserPage, isFollower, callbackIsFollower, userPageId}) {
   const { token } = useContext(AuthContext);
   const [loadingButton, setLoadingButton] = useState(false);
   const decoded = jwtDecode(token);
+  const CONFIG = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+    const URL = "https://projeto17-linkr.herokuapp.com/hashtag/trending";
+    const URL_FOLLOW = 'http://localhost:4000';
 
   useEffect(() => {
-    // const URL = "https://projeto17-linkr.herokuapp.com/hashtag/trending";
-    const URL = 'http://localhost:4000'
-    const CONFIG = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
 
     const promise = axios.get(URL, CONFIG);
 
@@ -33,8 +34,8 @@ function Trending({isUserPage, isFollower, callbackIsFollower, userPageId}) {
   function handleFollowRequest(followedId, followerId, followingAlready) {
     setLoadingButton(true);
 
-    if (followingAlready) {
-        const promise = axios.post(`${URL}/follow`, {followedId, followerId}, config);
+    if (!followingAlready) {
+        const promise = axios.post(`${URL_FOLLOW}/follow`, {followedId, followerId}, CONFIG);
         promise.then(() => {
             setLoadingButton(false);
             callbackIsFollower(true);
@@ -45,7 +46,7 @@ function Trending({isUserPage, isFollower, callbackIsFollower, userPageId}) {
             alert('Não foi possível completar o seu follow');
         })
     } else {
-        const promise = axios.post(`${URL}/unfollow`, {followedId, followerId}, config);
+        const promise = axios.post(`${URL_FOLLOW}/unfollow`, {followedId, followerId}, CONFIG);
         promise.then(() => {
             setLoadingButton(false);
             callbackIsFollower(false);
@@ -60,7 +61,7 @@ function Trending({isUserPage, isFollower, callbackIsFollower, userPageId}) {
 
   return (
     <Container>
-        {isUserPage === true ?
+        {(isUserPage === true && userPageId !== decoded.id) ?
         <ButtonFollow 
         following={isFollower}
         onClick={() => handleFollowRequest(userPageId, decoded.id, isFollower)}
