@@ -6,7 +6,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import PostContext from '../../contexts/postContext';
 
 function PublishPost() {
-    const { getPosts } = useContext(PostContext);
+    const { setPostList, getPosts, setPage } = useContext(PostContext);
     const [userPicture, setUserPicture] = useState("");
 
     const [postData, setPostData] = useState({ description: "", link: "" });
@@ -14,7 +14,7 @@ function PublishPost() {
     const { token } = useContext(AuthContext);
 
     useEffect(() => {
-        getPosts(token);
+        // getPosts(token);
         getUserPicture();
     }, []);
 
@@ -44,6 +44,7 @@ function PublishPost() {
         setLoading(true);
 
         const URL = "https://projeto17-linkr.herokuapp.com/posts";
+        // const URL = "http://localhost:4000/posts";
         const config = {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -59,7 +60,9 @@ function PublishPost() {
         console.log(metaPostData);
         const promise = axios.post(URL, metaPostData, config);
         promise.then(response => {
-            getPosts(token);
+            setPostList([]);
+            setPage(0);
+            // getPosts(token);
             setPostData({ description: "", link: "" });
             setLoading(false);
         });

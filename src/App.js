@@ -12,29 +12,30 @@ import PostsByHashtag from './pages/PostsByHashtag';
 
 function App() {
   const [postList, setPostList] = useState([]);
+  const [page, setPage] = useState(0);
   const [loadingPosts, setLoadingPosts] = useState(false);
 
-  function getPosts(token) {
-    setLoadingPosts(true);
-    const URL = "https://projeto17-linkr.herokuapp.com/posts";
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    };
-    const promise = axios.get(URL, config);
-    promise.then(response => {
-      const { data } = response;
-      setPostList(data);
-      setLoadingPosts(false);
-    });
-    promise.catch(error => {
-      const { response } = error;
-      const { data } = response;
-      alert("An error ocurred while trying to fetch the posts, please refresh the page");
-      setLoadingPosts(false);
-    });
-  }
+  // function getPosts(token) {
+  //   setLoadingPosts(true);
+  //   const URL = `http://localhost:4000/posts/0`;
+  //   const config = {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`
+  //     }
+  //   };
+  //   const promise = axios.get(URL, config);
+  //   promise.then(response => {
+  //     const { data } = response;
+  //     setPostList(data);
+  //     setLoadingPosts(false);
+  //   });
+  //   promise.catch(error => {
+  //     const { response } = error;
+  //     const { data } = response;
+  //     alert("An error ocurred while trying to fetch the posts, please refresh the page");
+  //     setLoadingPosts(false);
+  //   });
+  // }
 
   return (
     <AuthProvider>
@@ -42,8 +43,10 @@ function App() {
       value={{
         postList,
         setPostList,
-        getPosts,
-        loadingPosts
+        // getPosts,
+        loadingPosts,
+        page,
+        setPage
       }}
     >
       <BrowserRouter>
