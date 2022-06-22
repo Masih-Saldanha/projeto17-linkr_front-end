@@ -2,13 +2,15 @@ import {useNavigate, useParams} from 'react-router-dom';
 import React, {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
+import jwtDecode from 'jwt-decode';
 
 import Header from './../../components/Header';
 import { AuthContext } from '../../contexts/AuthContext';
 import Trending from '../../components/Trending';
 import PostComponent from './PostComponent';
 
-const URL_API = `https://projeto17-linkr.herokuapp.com`;
+// const URL_API = `https://projeto17-linkr.herokuapp.com`;
+const URL_API = 'http://localhost:4000';
 
 export default function UserPage() {
     const [toggle, setToggle] = useState(false);
@@ -17,7 +19,10 @@ export default function UserPage() {
     const [userInfos, setUserInfos] = useState({});
     const [render, setRender] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [loadingButton, setLoadingButton] = useState(false);
+    const [following, setFollowing] = useState(null);
     const { token } = useContext(AuthContext);
+    const decoded = jwtDecode(token);
     
      const config = {
         headers: {
@@ -28,14 +33,13 @@ export default function UserPage() {
     useEffect(() => {
         const promise = axios.get(`${URL_API}/user/${id}`, config);
         promise.then(response => {
+            setFollowing(response.data.followingAlready)
             setUserInfos(response.data);
             setLoading(false);
         })
         .catch(error => {
             console.log(error);
             console.log('veio pro erro');
-            // setLoading(false);
-            // navigate('/');
         })
     }, [render]);
 
@@ -52,6 +56,34 @@ export default function UserPage() {
         )
     }
 
+    function handleFollowRequest(followedId, followerId, followingAlready) {
+        setLoadingButton(true);
+
+        if (!followingAlready) {
+            const promise = axios.post(`${URL_API}/follow`, {followedId, followerId}, config);
+            promise.then(() => {
+                setLoadingButton(false);
+                setFollowing(true);
+            });
+            promise.catch(err => {
+                console.log(err);
+                setLoadingButton(false);
+                alert('Não foi possível completar a sua requisição');
+            })
+        } else {
+            const promise = axios.post(`${URL_API}/unfollow`, {followedId, followerId}, config);
+            promise.then(() => {
+                setLoadingButton(false);
+                setFollowing(false);
+            });
+            promise.catch(err => {
+                console.log(err);
+                setLoadingButton(false);
+                alert('Não foi possível completar a sua requisição');
+            })
+        }
+    } 
+
     return loading === true ? (
         <>
           <NoPosts>Posts are loading</NoPosts>
@@ -66,10 +98,21 @@ export default function UserPage() {
             <HeadlineContainer>
                 <img src={userInfos.pictureUrl} />
                 <TimelineTitle>{userInfos.username}'s Posts</TimelineTitle>
+                {id === decoded.id ? <></> : <ButtonFollow 
+                following={following}
+                onClick={() => handleFollowRequest(id, decoded.id, following)}
+                disabled={loadingButton}
+                >
+                    {following === true ? 'Unfollow' : 'Follow'}
+                </ButtonFollow> }
             </HeadlineContainer>
-        {userInfos.posts.length > 0 ? renderPosts() : <NoPosts>There are no posts yet</NoPosts>}
+            {userInfos.posts.length > 0 ? renderPosts() : <NoPosts>There are no posts yet</NoPosts>}
         </Timeline>
-        <Trending />
+        <Trending 
+        isUserPage={true} 
+        isFollower={following} 
+        callbackIsFollower={setFollowing}
+        userPageId={id} />
       </Main>
     </>
     )
@@ -122,5 +165,27 @@ img{
     border-radius: 50%;
     width: 40px;
     height: 40px;
+}
+`
+
+const ButtonFollow = styled.button`
+background-color: ${props => props.following === true ? 'white' : '#1877F2'};
+padding: 10px;
+border-radius: 5px;
+width: 80px;
+border: none;
+margin-top: 80px;
+margin-left: 30px;
+font-family: Lato;
+font-weight: 700;
+font-size: 100%;
+color: ${props => props.following === true ? '#1877F2' : 'white'};
+
+&:hover {
+    cursor: pointer;
+}
+
+@media (min-width: 750px) {
+    display: none;
 }
 `

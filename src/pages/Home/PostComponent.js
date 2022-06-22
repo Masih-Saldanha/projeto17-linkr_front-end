@@ -145,9 +145,6 @@ export default function PostComponent(props) {
       .then(async (response) => {
         const { likes, userLiked } = response.data;
         const arrOfLikes = likes.map(like => like.username);
-        // await setLikesHover([...arrOfLikes]);
-        // await setUserLikedState(userLiked ? true : false);
-        // setText(hoverControl(likesHover, userLiked));
         setText(hoverControl(arrOfLikes, userLiked));
       }).catch(err => {
         console.log('Erro', err);
