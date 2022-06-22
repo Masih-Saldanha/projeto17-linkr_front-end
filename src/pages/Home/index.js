@@ -1,17 +1,15 @@
 import { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { IoMdCreate, IoMdTrash } from 'react-icons/io';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroller';
 import { Oval } from "react-loader-spinner";
+import { BiRefresh } from 'react-icons/bi';
 import useInterval from 'use-interval';
 
 import PublishPost from '../../components/PublishPost';
 import PostContext from '../../contexts/postContext';
 import Header from './../../components/Header';
-import { IoHeartOutline, IoHeart } from 'react-icons/io5';
-import { BiRefresh } from 'react-icons/bi';
 import { AuthContext } from '../../contexts/AuthContext';
 import PostComponent from './PostComponent';
 import Trending from '../../components/Trending';
