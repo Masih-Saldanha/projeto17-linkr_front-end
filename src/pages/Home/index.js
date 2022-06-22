@@ -1,8 +1,10 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { IoMdCreate, IoMdTrash } from 'react-icons/io';
 import axios from 'axios';
+import InfiniteScroll from 'react-infinite-scroller';
+import { Oval } from "react-loader-spinner";
 
 import PublishPost from '../../components/PublishPost';
 import PostContext from '../../contexts/postContext';
@@ -16,17 +18,21 @@ const URL_API = `https://projeto17-linkr.herokuapp.com`;
 
 function Home() {
   const [toggle, setToggle] = useState(false);
+  // const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
 
   const navigate = useNavigate();
-  const { postList, setPostList, getPosts, loadingPosts } = useContext(PostContext);
+  const { postList, setPostList, getPosts, loadingPosts, page, setPage } = useContext(PostContext);
   const { token } = useContext(AuthContext);
 
   function renderPosts() {
-    if (loadingPosts) {
-      return (
-        <NoPosts>Loading Posts</NoPosts>
-      )
-    } else if (postList.length === 0) {
+    if
+      // (loadingPosts) {
+      //   return (
+      //     <NoPosts>Loading Posts</NoPosts>
+      //   )
+      // } else if 
+      (postList.length === 0 && !hasMore) {
       return (
         <NoPosts>There are no posts yet</NoPosts>
       )
@@ -44,18 +50,56 @@ function Home() {
     }
   }
 
+  function fetchMoreData(pageNumber) {
+    pageNumber = page;
+    const URL = `https://projeto17-linkr.herokuapp.com/posts/${pageNumber}`;
+    // const URL = `http://localhost:4000/posts/${pageNumber}`;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+    console.log("entrou")
+    console.log(pageNumber);
+    // console.log([...postList]);
+    const promise = axios.get(URL, config);
+    promise.then(response => {
+      const { data } = response;
+      if (data.length === 0) return setHasMore(false);
+      setPostList([...postList, ...data]);
+      setPage(pageNumber + 1);
+      console.log("saiu")
+      console.log(pageNumber);
+      // console.log([...postList])
+      // console.log([...data]);
+    });
+    promise.catch(error => {
+      const { response } = error;
+      const { data } = response;
+      alert("An error ocurred while trying to fetch the posts, please refresh the page");
+    });
+  };
+
   return (
     <>
       <Header toggle={toggle} setToggle={setToggle} />
       <Main>
         <Timeline>
-          <TimelineTitle
-            onClick={() => {
-              getPosts(token);
-            }}
-          >timeline</TimelineTitle>
+          <TimelineTitle>timeline</TimelineTitle>
           <PublishPost></PublishPost>
-          {renderPosts()}
+          <InfiniteScroll
+            dataLength={postList.length}
+            loader={
+              <Load>
+                <Oval color="#333333" secondaryColor='#6D6D6D' height={36} width={36} />
+                <NoPosts>Loading more posts...</NoPosts>
+              </Load>
+            }
+            loadMore={() => fetchMoreData(page)}
+            hasMore={hasMore}
+          >
+            {renderPosts()}
+          </InfiniteScroll>
         </Timeline>
         <Trending />
       </Main>
@@ -89,13 +133,22 @@ line-height: 49px;
 color: #FFFFFF;
 `
 
+const Load = styled.div`
+display: flex;
+flex-direction: column;
+align-items: center;
+margin-top: 52px;
+`
+
 const NoPosts = styled.h1`
+margin-top: 16px;
 text-align: center;
-font-family: Oswald;
-font-weight: 700;
-font-size: 33px;
-line-height: 49px;
-color: #FFFFFF;
+font-family: Lato;
+font-style: normal;
+font-weight: 400;
+font-size: 22px;
+line-height: 26px;
+color: #6D6D6D;
 `
 
 const Post = styled.article`
