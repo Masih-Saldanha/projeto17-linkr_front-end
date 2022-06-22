@@ -43,8 +43,8 @@ function PublishPost() {
         }
         setLoading(true);
 
-        const URL = "https://projeto17-linkr.herokuapp.com/posts";
-        // const URL = "http://localhost:4000/posts";
+        // const URL = "https://projeto17-linkr.herokuapp.com/posts";
+        const URL = "http://localhost:4000/posts";
         const config = {
             headers: {
                 Authorization: `Bearer ${token}`
