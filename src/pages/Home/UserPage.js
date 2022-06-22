@@ -2,6 +2,7 @@ import {useNavigate, useParams} from 'react-router-dom';
 import React, {useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
+import jwtDecode from 'jwt-decode';
 
 import Header from './../../components/Header';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -18,6 +19,8 @@ export default function UserPage() {
     const [render, setRender] = useState(false);
     const [loading, setLoading] = useState(true);
     const { token } = useContext(AuthContext);
+    const [following, setFollowing] = useState(false);
+    const decoded = jwtDecode(token);
     
      const config = {
         headers: {
@@ -34,8 +37,6 @@ export default function UserPage() {
         .catch(error => {
             console.log(error);
             console.log('veio pro erro');
-            // setLoading(false);
-            // navigate('/');
         })
     }, [render]);
 
@@ -66,10 +67,11 @@ export default function UserPage() {
             <HeadlineContainer>
                 <img src={userInfos.pictureUrl} />
                 <TimelineTitle>{userInfos.username}'s Posts</TimelineTitle>
+                {id === decoded.id ? <></> : <ButtonFollow following={true}>{1 == 2 ? 'Unfollow' : 'Follow'}</ButtonFollow> }
             </HeadlineContainer>
-        {userInfos.posts.length > 0 ? renderPosts() : <NoPosts>There are no posts yet</NoPosts>}
+            {userInfos.posts.length > 0 ? renderPosts() : <NoPosts>There are no posts yet</NoPosts>}
         </Timeline>
-        <Trending />
+        <Trending isUserPage={id === decoded.id ? true : false} isFollower={false} />
       </Main>
     </>
     )
@@ -122,5 +124,27 @@ img{
     border-radius: 50%;
     width: 40px;
     height: 40px;
+}
+`
+
+const ButtonFollow = styled.button`
+background-color: ${props => props.following === true ? 'white' : '#1877F2'};
+padding: 10px;
+border-radius: 5px;
+width: 80px;
+border: none;
+margin-top: 80px;
+margin-left: 30px;
+font-family: Lato;
+font-weight: 700;
+font-size: 100%;
+color: ${props => props.following === true ? '#1877F2' : 'white'};
+
+&:hover {
+    cursor: pointer;
+}
+
+@media (min-width: 750px) {
+    display: none;
 }
 `

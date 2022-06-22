@@ -151,6 +151,10 @@ align-items: center;
 
 const UsersList = styled.ul`
 width: 100%;
+
+&:hover {
+    cursor: pointer;
+}
 `;
 
 const User = styled.li`
@@ -162,7 +166,7 @@ color: black;
 background-color: #E7E7E7;
 padding: 15px;
 border-radius: 8px;
-z-index: 1;
+width: 100%;
 
 &:hover {
     cursor: pointer;
