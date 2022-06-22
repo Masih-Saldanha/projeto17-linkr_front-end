@@ -28,7 +28,7 @@ function Home() {
   const { token } = useContext(AuthContext);
 
   useInterval(() => {
-    const URL = `https://projeto17-linkr.herokuapp.com/posts/${page}`;
+    const URL = `https://projeto17-linkr.herokuapp.com/posts/0`;
     // const URL = `http://localhost:4000/posts/0`;
     const config = {
       headers: {
@@ -42,9 +42,9 @@ function Home() {
       if (data[0].postId !== postList[0].postId && postList.length !== 0) {
         setHasNewPosts(true);
         setCount(data[0].postId - postList[0].postId);
-        console.log("count: ", count)
+        // console.log("count: ", count)
       }
-      console.log("igual? ", data[0].postId === postList[0].postId)
+      // console.log("igual? ", data[0].postId === postList[0].postId)
       console.log("saiu req 15 segundos", hasNewPosts);
     });
     promise.catch(error => {
@@ -88,8 +88,8 @@ function Home() {
         Authorization: `Bearer ${token}`
       }
     };
-    console.log("entrou")
-    console.log(pageNumber);
+    console.log("entrou load posts");
+    console.log("pageNumber: ", pageNumber);
     // console.log([...postList]);
     const promise = axios.get(URL, config);
     promise.then(response => {
@@ -97,8 +97,8 @@ function Home() {
       if (data.length === 0) return setHasMore(false);
       setPostList([...postList, ...data]);
       setPage(pageNumber + 1);
-      console.log("saiu")
-      console.log(pageNumber);
+      console.log("saiu load posts");
+      console.log("pageNumber: ", pageNumber);
       // console.log([...postList])
       // console.log([...data]);
     });
