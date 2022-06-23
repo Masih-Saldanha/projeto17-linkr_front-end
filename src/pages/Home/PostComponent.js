@@ -45,6 +45,9 @@ export default function PostComponent(props) {
 
   const [inputComment, setInputComment] = useState('');
   const [showComment,setShowComment] = useState(false);
+  const [userPicture, setUserPicture] = useState('');
+  const [qtyPosts, setQtyPosts] = useState(0);
+  
 
   let countNotState = '';
 
@@ -295,8 +298,8 @@ export default function PostComponent(props) {
       },
     };
     const BODY = {
-      userid: decoded.id,
-      postid: post.postId,
+      userId: decoded.id,
+      postId: post.postId,
       comment: inputComment
     };
     const promise = axios.post(URL, BODY, CONFIG);
@@ -304,12 +307,35 @@ export default function PostComponent(props) {
       setShowComment(false);
       setInputComment('');
     });
-    promise.catch((err) => console.log(err));
+    promise.catch((err) => console.log(err.response));
   }
 
   function toggleShowComment() {
     setShowComment(!showComment);
   }
+
+  useEffect(() => {
+    const CONFIG = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    function getPicture(){
+      const URL = `${URL_API}/picture/user`;
+      const promise = axios.get(URL, config);
+      promise.then(response => setUserPicture(response.data.pictureUrl));
+      promise.catch(err => console.log(err.response));
+    }
+    
+    function getQtdPosts(){
+      const URL = `${URL_API}/comment/qty/${post.postId}`;
+      const promise = axios.get(URL, config);
+      promise.then(response => setQtyPosts(response.data.quantity));
+      promise.catch(err => console.log(err.response));
+    }
+
+  },[token,qtyPosts]);
 
   return (
 
@@ -329,7 +355,7 @@ export default function PostComponent(props) {
               <></>}
           <IconRightComment>
             <AiOutlineComment onClick={toggleShowComment}/>
-            <p>0 comments</p>
+            <p>{qtyPosts} comments</p>
           </IconRightComment>
           </PostLeftSide>
           <PostRightSide>
@@ -412,7 +438,7 @@ export default function PostComponent(props) {
         </Post>
         {showComment && 
           <Comment>
-            <AvatarComment src={decoded.picture} alt='Avatar'/>
+            <AvatarComment src={userPicture} alt='Avatar'/>
             <InputComment placeholder='write a comment...' onChange={(e) => setInputComment(e.target.value)}/>
             <IconComment onClick={handleCommentClick}><FiSend /></IconComment>
           </Comment>
