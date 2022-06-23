@@ -10,6 +10,7 @@ import useAuth from "../../hooks/useAuth";
 import { AuthContext } from "../../contexts/AuthContext";
 
 const URL_API = `https://projeto17-linkr.herokuapp.com`;
+// const URL_API = `http://localhost:4000`;
  
 function Header(props) {
         const { signOut, image } = useAuth();
@@ -55,6 +56,7 @@ function Header(props) {
         function getUserPicture() {
           // ta feio assim pra evitar conflito no back com /user/:id
           const URL = "https://projeto17-linkr.herokuapp.com/picture/user";
+        //   const URL = "http://localhost:4000/picture/user";
           const config = {
             headers: {
               Authorization: `Bearer ${token}`
