@@ -15,13 +15,14 @@ import PostComponent from './PostComponent';
 import Trending from '../../components/Trending';
 
 const URL_API = `https://projeto17-linkr.herokuapp.com`;
+// const URL_API = `http://localhost:4000`;
 
 function Home() {
   const [toggle, setToggle] = useState(false);
-  // const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [hasNewPosts, setHasNewPosts] = useState(false);
   const [count, setCount] = useState(0);
+  const [noPostsMessage, setNoPostsMessage] = useState("");
 
   const navigate = useNavigate();
   const { postList, setPostList, getPosts, loadingPosts, page, setPage } = useContext(PostContext);
@@ -39,6 +40,15 @@ function Home() {
     const promise = axios.get(URL, config);
     promise.then(response => {
       const { data } = response;
+      console.log("data", data);
+      if (typeof(data) === "string") {
+        console.log("entrou")
+        setNoPostsMessage(data);
+        setHasNewPosts(false);
+        setHasMore(false);
+        setPostList([]);
+        setCount(0);
+      }
       if (data[0].postId !== postList[0].postId && postList.length !== 0) {
         setHasNewPosts(true);
         setCount(data[0].postId - postList[0].postId);
@@ -55,15 +65,9 @@ function Home() {
   }, (15 * 1000));
 
   function renderPosts() {
-    if
-      // (loadingPosts) {
-      //   return (
-      //     <NoPosts>Loading Posts</NoPosts>
-      //   )
-      // } else if 
-      (postList.length === 0 && !hasMore) {
+    if (postList.length === 0 && !hasMore) {
       return (
-        <NoPosts>There are no posts yet</NoPosts>
+        <NoPosts>{noPostsMessage}</NoPosts>
       )
     } else {
       return (
@@ -94,6 +98,12 @@ function Home() {
     const promise = axios.get(URL, config);
     promise.then(response => {
       const { data } = response;
+      console.log(typeof(data), data);
+      if (typeof(data) !== "object") {
+        setNoPostsMessage(data);
+        setHasMore(false);
+        return
+      }
       if (data.length === 0) return setHasMore(false);
       setPostList([...postList, ...data]);
       setPage(pageNumber + 1);
