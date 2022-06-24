@@ -10,8 +10,8 @@ import useAuth from "../../hooks/useAuth";
 import { AuthContext } from "../../contexts/AuthContext";
 import SearchBar from "../SearchBar";
 
-// const URL_API = `https://projeto17-linkr.herokuapp.com`;
-const URL_API = `http://localhost:4000`;
+const URL_API = `https://projeto17-linkr.herokuapp.com`;
+// const URL_API = `http://localhost:4000`;
  
 function Header(props) {
         const { signOut, image } = useAuth();
