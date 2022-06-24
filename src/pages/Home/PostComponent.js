@@ -41,7 +41,7 @@ export default function PostComponent(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [isOpenRepost, setIsOpenRepost] = useState(false);
-  const [repostsCount, setRepostsCount] = useState(post.reposts);
+  const [repostsCount, setRepostsCount] = useState(parseInt(post.reposts));
   const [reposting, setReposting] = useState(false);
 
   const [liked, setLiked] = useState(false);
