@@ -8,6 +8,8 @@ import jwtDecode from 'jwt-decode';
 
 import { IoMdCreate, IoMdTrash } from 'react-icons/io';
 import { IoHeartOutline, IoHeart } from 'react-icons/io5';
+import { FiSend } from 'react-icons/fi';
+import { AiOutlineComment } from 'react-icons/ai';
 import { AuthContext } from '../../contexts/AuthContext';
 
 const URL_API = `https://projeto17-linkr.herokuapp.com`;
@@ -40,6 +42,12 @@ export default function PostComponent(props) {
   const [liked, setLiked] = useState(false);
   const [count, setCount] = useState(0);
   const [text, setText] = useState(null);
+
+  const [inputComment, setInputComment] = useState('');
+  const [showComment,setShowComment] = useState(false);
+  const [userPicture, setUserPicture] = useState('');
+  const [qtyPosts, setQtyPosts] = useState(0);
+  
 
   let countNotState = '';
 
@@ -281,100 +289,170 @@ export default function PostComponent(props) {
     });
   }
 
+  function handleCommentClick() {
+  
+    const URL = `${URL_API}/comment`;
+    const CONFIG = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const BODY = {
+      userId: decoded.id,
+      postId: post.postId,
+      comment: inputComment
+    };
+    const promise = axios.post(URL, BODY, CONFIG);
+    promise.then((promise) => {
+      setShowComment(false);
+      setInputComment('');
+      getQtdPosts();
+    });
+    promise.catch((err) => console.log(err.response));
+  }
+
+  function toggleShowComment() {
+    setShowComment(!showComment);
+  }
+
+  function getQtdPosts(){
+    const URL = `${URL_API}/comment/qty/${post.postId}`;
+    const CONFIG = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const promise = axios.get(URL, config);
+    promise.then(response => {
+      console.log(response.data);
+      setQtyPosts(response.data.quantity)
+    });
+    promise.catch(err => console.log(err.response));
+  }
+
+  function getPicture(){
+    const CONFIG = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const URL = `${URL_API}/picture/user`;
+    const promise = axios.get(URL, config);
+    promise.then(response => setUserPicture(response.data.pictureUrl));
+    promise.catch(err => console.log(err.response));
+  }
+
+  useEffect(() => {
+    getPicture();
+  },[showComment]);
+
   return (
 
     deleted ?
       <></>
       :
-      <Post key={index}>
-        <PostLeftSide>
-          <UserPicture src={userInfos ? userInfos.pictureUrl : post.pictureUrl} />
-          {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
-          <p data-tip="" data-for={`${post.postId}`} onMouseOver={() => getLikesOnHover(post.postId)}>{countLikes(post.likes, countNotState)} likes</p>
-          {text ?
-            <ReactTooltip id={`${post.postId}`} place="bottom">
-              {text}
-            </ReactTooltip> :
-            <></>}
-        </PostLeftSide>
-        <PostRightSide>
-          {
-            post.userId === decoded.id ?
-              <>
-                <EditIcon onClick={() => editPost(post.postId)}><IoMdCreate /></EditIcon>
-                <DeleteIcon onClick={() => {
-                  // deletePost(post.postId);
-                  toggleModal();
-                }}><IoMdTrash /></DeleteIcon>
-                <Modal
-                  isOpen={isOpen}
-                  onRequestClose={toggleModal}
-                  className="_"
-                  overlayClassName="_"
-                  contentElement={(props, children) => (
-                    <ModalStyle {...props}>{children}</ModalStyle>
-                  )}
-                  overlayElement={(props, contentElement) => (
-                    <OverlayStyle {...props}>{contentElement}</OverlayStyle>
-                  )}
-                // shouldCloseOnEsc={false}
-                // shouldCloseOnOverlayClick={false}
-                >
-                  {
-                    !deleting ? 
-                    <>
-                      <h1>Are you sure you want to delete this post?</h1>
-                      <div>
-                        <CancelDelete onClick={toggleModal}>No, go back</CancelDelete>
-                        <ConfirmDelete onClick={sendDeletePost}>Yes, delete it</ConfirmDelete>
-                      </div>
-                    </>
-                    :
-                    <h1>LOADING</h1>
-                  }
-                </Modal>
-              </>
-              :
-              <></>
-          }
-          <h1 onClick={() => navigate(`/user/${post.userId}`)}>{userInfos ? userInfos.username : post.username}</h1>
-          {
-            editing === false ?
-              <h2>{originalDescription}</h2>
-              :
-              enableEdit ?
-                <form onSubmit={sendEditPost}>
-                  <input
-                    ref={inputRef}
-                    type="textarea"
-                    value={newDescription}
-                    onChange={(e) => setNewDescription(e.target.value)}
-                  />
-                </form>
+      <ColorComment>
+        <Post key={index}>
+          <PostLeftSide>
+            <UserPicture src={userInfos ? userInfos.pictureUrl : post.pictureUrl} />
+            {defineParametersForLikeButton(post.link.likedByUser, post.postId)}
+            <p data-tip="" data-for={`${post.postId}`} onMouseOver={() => getLikesOnHover(post.postId)}>{countLikes(post.likes, countNotState)} likes</p>
+            {text ?
+              <ReactTooltip id={`${post.postId}`} place="bottom">
+                {text}
+              </ReactTooltip> :
+              <></>}
+          <IconRightComment>
+            <AiOutlineComment onClick={toggleShowComment}/>
+            <p>{qtyPosts} comments</p>
+          </IconRightComment>
+          </PostLeftSide>
+          <PostRightSide>
+            {
+              post.userId === decoded.id ?
+                <>
+                  <EditIcon onClick={() => editPost(post.postId)}><IoMdCreate /></EditIcon>
+                  <DeleteIcon onClick={() => {
+                    // deletePost(post.postId);
+                    toggleModal();
+                  }}><IoMdTrash /></DeleteIcon>
+                  <Modal
+                    isOpen={isOpen}
+                    onRequestClose={toggleModal}
+                    className="_"
+                    overlayClassName="_"
+                    contentElement={(props, children) => (
+                      <ModalStyle {...props}>{children}</ModalStyle>
+                    )}
+                    overlayElement={(props, contentElement) => (
+                      <OverlayStyle {...props}>{contentElement}</OverlayStyle>
+                    )}
+                  // shouldCloseOnEsc={false}
+                  // shouldCloseOnOverlayClick={false}
+                  >
+                    {
+                      !deleting ? 
+                      <>
+                        <h1>Are you sure you want to delete this post?</h1>
+                        <div>
+                          <CancelDelete onClick={toggleModal}>No, go back</CancelDelete>
+                          <ConfirmDelete onClick={sendDeletePost}>Yes, delete it</ConfirmDelete>
+                        </div>
+                      </>
+                      :
+                      <h1>LOADING</h1>
+                    }
+                  </Modal>
+                </>
                 :
-                <form onSubmit={sendEditPost}>
-                  <input
-                    ref={inputRef}
-                    type="textarea"
-                    value={newDescription}
-                    onChange={(e) => setNewDescription(e.target.value)}
-                    disabled
-                  />
-                </form>
-          }
+                <></>
+            }
+            <h1 onClick={() => navigate(`/user/${post.userId}`)}>{userInfos ? userInfos.username : post.username}</h1>
+            {
+              editing === false ?
+                <h2>{originalDescription}</h2>
+                :
+                enableEdit ?
+                  <form onSubmit={sendEditPost}>
+                    <input
+                      ref={inputRef}
+                      type="textarea"
+                      value={newDescription}
+                      onChange={(e) => setNewDescription(e.target.value)}
+                    />
+                  </form>
+                  :
+                  <form onSubmit={sendEditPost}>
+                    <input
+                      ref={inputRef}
+                      type="textarea"
+                      value={newDescription}
+                      onChange={(e) => setNewDescription(e.target.value)}
+                      disabled
+                    />
+                  </form>
+            }
 
-          <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
-            <Link>
-              <div>
-                <h3>{post.link.linkTitle}</h3>
-                <h4>{post.link.linkDescription}</h4>
-                <h5>{post.link.linkUrl}</h5>
-              </div>
-              <img src={`${post.link.linkImage}`} />
-            </Link>
-          </a>
-        </PostRightSide>
-      </Post>
+            <a href={post.link.linkUrl} target="_blank" rel="noopener noreferrer">
+              <Link>
+                <div>
+                  <h3>{post.link.linkTitle}</h3>
+                  <h4>{post.link.linkDescription}</h4>
+                  <h5>{post.link.linkUrl}</h5>
+                </div>
+                <img src={`${post.link.linkImage}`} />
+              </Link>
+            </a>
+          </PostRightSide>
+        </Post>
+        {showComment && 
+          <Comment>
+            <AvatarComment src={userPicture} alt='Avatar'/>
+            <InputComment placeholder='write a comment...' onChange={(e) => setInputComment(e.target.value)}/>
+            <IconComment onClick={handleCommentClick}><FiSend /></IconComment>
+          </Comment>
+        }
+      </ColorComment>
   )
 }
 
@@ -451,7 +529,7 @@ justify-content: space-between;
 width: 100%;
 background-color: #171717;
 padding: 15px;
-margin-bottom: 16px;
+margin-top: 16px;
 border-radius: 16px;
 @media (max-width: 375px) {
   display: flex;
@@ -459,7 +537,6 @@ border-radius: 16px;
   width: 100%;
   background-color: #171717;
   padding: 15px;
-  margin-bottom: 16px;
   border-radius: 0;
 }
 `
@@ -645,4 +722,85 @@ img {
     border-radius: 0px 12px 12px 0px;
   }
 }
+`
+
+const ColorComment = styled.div `
+  background-color: #1E1E1E;
+  border-radius: 16px;
+  border-radius: 16px;
+`
+
+const Comment = styled.div `
+  width: 100%;
+  height: 83px;
+  background-color: #1E1E1E;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  //border-top: 1px solid #353535;
+`
+
+const InputComment = styled.input`
+  background-color: #252525;
+  color: #ACACAC;
+  font-family: 'Lato';
+  font-weight: 400;
+  font-size: 14px;
+  border: none;
+  border-bottom-left-radius: 8px;
+  border-top-left-radius: 8px;
+  width: 100%;
+  height: 39px;
+  padding: 15px;
+  
+  ::placeholder {
+    font-family: 'Lato';
+    font-style: italic;
+    font-size: 14px;
+    color: #575757;
+  }
+`
+
+const AvatarComment = styled.img`
+  width: 39px;
+  height: 39px;
+  border-radius: 50%;
+  margin-right: 14px;
+`
+
+const IconComment = styled.div`
+  width: 39px;
+  height: 39px;
+  cursor: pointer;
+  color: #F3F3F3;
+  background-color: #252525;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  font-size: 15px;
+  border-bottom-right-radius: 8px;
+  border-top-right-radius: 8px;
+  padding-right: 15px;
+`
+
+const IconRightComment = styled.div`
+  cursor: pointer;
+  color: #FFF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+  margin-top: 18px;
+  flex-direction: column;
+
+  p {
+    font-family: 'Lato';
+    font-weight: 400;
+    font-size: 11px;
+    text-align: center;
+    color: #FFFFFF;
+  }
 `
