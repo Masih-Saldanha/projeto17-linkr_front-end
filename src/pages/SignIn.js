@@ -32,13 +32,11 @@ function SignIn() {
                 const promise = requestAuthApi.signIn(userSignIn);
                 promise.then((response) => {
                         setSignInStatus(false);
-                        console.log(response.data);
                         signIn(response.data);
                         navigate("/timeline");
                 });
                 promise.catch((e) => {
                         alert(e.response.data.error || e.response.data[0]);
-                        console.log(e.response.data);
                         setSignInStatus(false);
                 });
         }

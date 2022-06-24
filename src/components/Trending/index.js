@@ -41,7 +41,6 @@ function Trending({isUserPage, isFollower, callbackIsFollower, userPageId}) {
             callbackIsFollower(true);
         });
         promise.catch(err => {
-            console.log(err);
             setLoadingButton(false);
             alert('Não foi possível completar o seu follow');
         })
@@ -52,7 +51,6 @@ function Trending({isUserPage, isFollower, callbackIsFollower, userPageId}) {
             callbackIsFollower(false);
         });
         promise.catch(err => {
-            console.log(err);
             setLoadingButton(false);
             alert('Não foi possível completar o seu unfollow');
         })

@@ -30,7 +30,6 @@ function SignUp() {
                         })
                         .catch((e) => {
                                 alert(e.response.data);
-                                console.log(e.response.data);
                                 setSignUpStatus(false);
                         });
         }

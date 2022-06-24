@@ -39,7 +39,6 @@ export default function UserPage() {
         })
         .catch(error => {
             console.log(error);
-            console.log('veio pro erro');
         })
     }, [render]);
 
@@ -66,7 +65,6 @@ export default function UserPage() {
                 setFollowing(true);
             });
             promise.catch(err => {
-                console.log(err);
                 setLoadingButton(false);
                 alert('Não foi possível completar a sua requisição');
             })
