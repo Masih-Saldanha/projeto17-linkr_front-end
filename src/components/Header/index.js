@@ -8,17 +8,17 @@ import { IoSearchOutline } from 'react-icons/io5';
 
 import useAuth from "../../hooks/useAuth";
 import { AuthContext } from "../../contexts/AuthContext";
+import SearchBar from "../SearchBar";
 
-const URL_API = `https://projeto17-linkr.herokuapp.com`;
-// const URL_API = `http://localhost:4000`;
+// const URL_API = `https://projeto17-linkr.herokuapp.com`;
+const URL_API = `http://localhost:4000`;
  
 function Header(props) {
         const { signOut, image } = useAuth();
         const { toggle, setToggle } = props;
         const navigate = useNavigate();
         const [value, setValue] = useState('');
-        const [usersSearch, setUsersSearch] = useState(null);
-
+        const [usersSearch, setUsersSearch] = useState([]);
         const [userPicture, setUserPicture] = useState("");
         const { token } = useContext(AuthContext);
 
@@ -36,7 +36,8 @@ function Header(props) {
             e.preventDefault();
             setValue(e.target.value);
             if (String(e.target.value).length >= 3) {
-                await axios.get(`${URL_API}/search/${e.target.value}`, config)
+                setTimeout(async () => {
+                    await axios.get(`${URL_API}/search/${String(e.target.value)}`, config)
                     .then(response => {
                         const {data} = response;
                         setUsersSearch(data.map(user => {
@@ -50,6 +51,7 @@ function Header(props) {
                         )
                     })
                     .catch(err => console.log(err))
+                }, 300);
             }
         }
       
@@ -77,33 +79,18 @@ function Header(props) {
                 navigate("/");
                 
         };
-
-        function returnUsers() {
-            return (
-                usersSearch.map(user => {
-                    return (
-                        <User onClick={() => navigate(`/user/${user.id}`)}>{user.username}</User>
-                    )
-                })
-            )
-        }
  
         return (
                 <ContainerParent>
                         <Container onClick={() => setUsersSearch(null)}>
                                 <h1 onClick={() => navigate('/timeline')}>linkr</h1>
-                                <Input className={`bar-header`} search={usersSearch}>
-                                    <input 
-                                    type="text"
-                                    placeholder="search for users" 
-                                    onChange={e => handleSearchEvent(e)}>
-                                    </input>
-                                    <IoSearchOutline />
-                                    {usersSearch ? 
-                                    <UsersList>
-                                        {returnUsers()}
-                                    </UsersList> : <></>}
-                                </Input>
+                                <SearchBar 
+                                className='bar-header' 
+                                callbackEventHandler={handleSearchEvent} 
+                                placeholder='search for users'
+                                value={value}
+                                valueCallback={() => setValue('')}
+                                users={usersSearch}/>
                                 <div onClick={() => setToggle(!toggle)}>
                                         {toggle ? (
                                                 <IoIosArrowUp color="#FFFFFF" size={18} strokeWidth="5" />
@@ -120,18 +107,13 @@ function Header(props) {
                         ) : (
                                 <></>
                         )}
-                        <Input className={`bar-below`} search={usersSearch}>
-                            <input 
-                            type="text"
-                            placeholder="search for users" 
-                            onChange={e => handleSearchEvent(e)}>
-                            </input>
-                            <IoSearchOutline />
-                            {usersSearch ? 
-                            <UsersList>
-                                {returnUsers()}
-                            </UsersList> : <></>}
-                        </Input>
+                        <SearchBar 
+                        className='bar-below' 
+                        callbackEventHandler={handleSearchEvent} 
+                        placeholder='search for users'
+                        value={value}
+                        users={usersSearch}
+                        valueCallback={() => setValue('')}/>
                 </ContainerParent>
         );
 
@@ -143,6 +125,11 @@ const ContainerParent = styled.div`
 display: flex;
 flex-direction: column;
 align-items: center;
+
+.bar-below {
+    position: relative;
+    margin-top: 0;
+}
 
 @media (min-width: 720px) {
     .bar-below {
