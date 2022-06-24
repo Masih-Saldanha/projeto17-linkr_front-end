@@ -9,8 +9,8 @@ import { AuthContext } from '../../contexts/AuthContext';
 import Trending from '../../components/Trending';
 import PostComponent from './PostComponent';
 
-// const URL_API = `https://projeto17-linkr.herokuapp.com`;
-const URL_API = 'http://localhost:4000';
+const URL_API = `https://projeto17-linkr.herokuapp.com`;
+// const URL_API = 'http://localhost:4000';
 
 export default function UserPage() {
     const [toggle, setToggle] = useState(false);
@@ -187,5 +187,9 @@ color: ${props => props.following === true ? '#1877F2' : 'white'};
 
 @media (min-width: 750px) {
     display: none;
+}
+
+&:disabled {
+    opacity: 0.5;
 }
 `
