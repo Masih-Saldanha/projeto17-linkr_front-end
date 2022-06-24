@@ -322,8 +322,7 @@ export default function PostComponent(props) {
     };
     const promise = axios.get(URL, config);
     promise.then(response => {
-      console.log(response.data);
-      setQtyPosts(response.data.quantity)
+      setQtyPosts(response.data[0].quantity)
     });
     promise.catch(err => console.log(err.response));
   }
@@ -358,7 +357,7 @@ export default function PostComponent(props) {
       alert("Não foi repostar o post");
     });
   }
-
+  getQtdPosts();
   return (
 
     deleted ?
