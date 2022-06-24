@@ -36,13 +36,10 @@ function Home() {
         Authorization: `Bearer ${token}`
       }
     };
-    console.log("entrou req 15 segundos");
     const promise = axios.get(URL, config);
     promise.then(response => {
       const { data } = response;
-      console.log("data", data);
       if (typeof(data) === "string") {
-        console.log("entrou")
         setNoPostsMessage(data);
         setHasNewPosts(false);
         setHasMore(false);
@@ -52,10 +49,7 @@ function Home() {
       if (data[0].postId !== postList[0].postId && postList.length !== 0) {
         setHasNewPosts(true);
         setCount(data[0].postId - postList[0].postId);
-        // console.log("count: ", count)
       }
-      // console.log("igual? ", data[0].postId === postList[0].postId)
-      console.log("saiu req 15 segundos", hasNewPosts);
     });
     promise.catch(error => {
       const { response } = error;
@@ -92,13 +86,9 @@ function Home() {
         Authorization: `Bearer ${token}`
       }
     };
-    console.log("entrou load posts");
-    console.log("pageNumber: ", pageNumber);
-    // console.log([...postList]);
     const promise = axios.get(URL, config);
     promise.then(response => {
       const { data } = response;
-      console.log(typeof(data), data);
       if (typeof(data) !== "object") {
         setNoPostsMessage(data);
         setHasMore(false);
@@ -107,10 +97,6 @@ function Home() {
       if (data.length === 0) return setHasMore(false);
       setPostList([...postList, ...data]);
       setPage(pageNumber + 1);
-      console.log("saiu load posts");
-      console.log("pageNumber: ", pageNumber);
-      // console.log([...postList])
-      // console.log([...data]);
     });
     promise.catch(error => {
       const { response } = error;
@@ -224,197 +210,5 @@ font-size: 22px;
 line-height: 26px;
 color: #6D6D6D;
 `
-
-// const Post = styled.article`
-// display: flex;
-// justify-content: space-between;
-// width: 100%;
-// background-color: #171717;
-// padding: 15px;
-// margin-bottom: 16px;
-// border-radius: 16px;
-// @media (max-width: 375px) {
-//   display: flex;
-//   justify-content: space-between;
-//   width: 100%;
-//   background-color: #171717;
-//   padding: 15px;
-//   margin-bottom: 16px;
-//   border-radius: 0;
-// }
-// `
-
-// const PostLeftSide = styled.section`
-// display: flex;
-// flex-direction: column;
-// align-items: center;
-// margin-right: 15px;
-// p {
-//   font-family: Lato;
-//   font-style: normal;
-//   font-weight: 400;
-//   font-size: 9px;
-//   line-height: 11px;
-//   color: #FFFFFF;
-// }
-
-// svg {
-//     font-size: 17px;
-//     margin-bottom: 12px;
-
-//     &:hover {
-//         cursor: pointer;
-//     }
-// }
-
-// .liked {
-//     color: #AC0000;
-// }
-
-// .not-liked{
-//     color: white;
-// }
-// `
-
-// const PostRightSide = styled.section`
-// position: relative;
-// width: 100%;
-// display: flex;
-// flex-direction: column;
-// h1 {
-//   font-family: Lato;
-//   font-style: normal;
-//   font-weight: 400;
-//   font-size: 17px;
-//   line-height: 20px;
-//   color: #FFFFFF;
-//   margin-bottom: 7px;
-// }
-// h2 {
-//   font-family: Lato;
-//   font-style: normal;
-//   font-weight: 400;
-//   font-size: 15px;
-//   line-height: 18px;
-//   color: #B7B7B7;
-//   margin-bottom: 13px;
-// }
-
-// strong{
-//   color: #B7B7B7;
-// }
-
-// a {
-//   color: #B7B7B7;
-// }
-// `
-
-// const EditIcon = styled.div`
-// position: absolute;
-// right: 25px;
-// color: #FFFFFF;
-// `
-
-// const DeleteIcon = styled.div`
-// position: absolute;
-// right: 0;
-// color: #FFFFFF;
-// `
-
-// const Link = styled.div`
-// width: 100%;
-// border: 1px solid #4D4D4D;
-// border-radius: 11px;
-// display: flex;
-// justify-content: space-between;
-// div {
-//   padding: 8px;
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: space-around;
-//   h3 {
-//   font-family: Lato;
-//   font-style: normal;
-//   font-weight: 400;
-//   font-size: 11px;
-//   line-height: 13px;
-//   color: #CECECE;
-//   }
-//   h4 {
-//   font-family: Lato;
-//   font-style: normal;
-//   font-weight: 400;
-//   font-size: 9px;
-//   line-height: 11px;
-//   color: #9B9595;
-//   margin-top: 4px;
-//   margin-bottom: 4px;
-//   }
-//   h5 {
-//   font-family: Lato;
-//   font-style: normal;
-//   font-weight: 400;
-//   font-size: 9px;
-//   line-height: 11px;
-//   color: #CECECE;
-//   }
-// }
-// img {
-//   width: 153px;
-//   height: 115px;
-//   border-radius: 0px 12px 12px 0px;
-// }
-// @media (max-width: 375px) {
-//   width: 100%;
-//   border: 1px solid #4D4D4D;
-//   border-radius: 11px;
-//   display: flex;
-//   justify-content: space-between;
-//   div {
-//     padding: 8px;
-//     display: flex;
-//     flex-direction: column;
-//     justify-content: space-between;
-//     h3 {
-//     font-family: Lato;
-//     font-style: normal;
-//     font-weight: 400;
-//     font-size: 11px;
-//     line-height: 13px;
-//     color: #CECECE;
-//     }
-//     h4 {
-//     font-family: Lato;
-//     font-style: normal;
-//     font-weight: 400;
-//     font-size: 9px;
-//     line-height: 11px;
-//     color: #9B9595;
-//     margin-top: 4px;
-//     margin-bottom: 4px;
-//     }
-//     h5 {
-//     font-family: Lato;
-//     font-style: normal;
-//     font-weight: 400;
-//     font-size: 9px;
-//     line-height: 11px;
-//     color: #CECECE;
-//     }
-//   }
-//   img {
-//     width: 95px;
-//     height: 115px;
-//     border-radius: 0px 12px 12px 0px;
-//   }
-// }
-// `
-
-// const UserPicture = styled.img`
-// width: 40px;
-// height: 40px;
-// border-radius: 50%;
-// margin-bottom: 17px;
-// `
 
 export default Home;

@@ -14,7 +14,6 @@ function PublishPost() {
     const { token } = useContext(AuthContext);
 
     useEffect(() => {
-        // getPosts(token);
         getUserPicture();
     }, []);
 
@@ -57,12 +56,10 @@ function PublishPost() {
         if (!metaPostData.description) {
             delete metaPostData.description;
         }
-        console.log(metaPostData);
         const promise = axios.post(URL, metaPostData, config);
         promise.then(response => {
             setPostList([]);
             setPage(0);
-            // getPosts(token);
             setPostData({ description: "", link: "" });
             setLoading(false);
         });

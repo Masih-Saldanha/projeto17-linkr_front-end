@@ -8,11 +8,13 @@ import jwtDecode from 'jwt-decode';
 
 import { IoMdCreate, IoMdTrash } from 'react-icons/io';
 import { IoHeartOutline, IoHeart } from 'react-icons/io5';
+import { BiRepost } from 'react-icons/bi';
 import { FiSend } from 'react-icons/fi';
 import { AiOutlineComment } from 'react-icons/ai';
 import { AuthContext } from '../../contexts/AuthContext';
 
 const URL_API = `https://projeto17-linkr.herokuapp.com`;
+// const URL_API = `http://localhost:4000`;
 
 export default function PostComponent(props) {
   const { post, index, userInfos } = props;
@@ -25,7 +27,7 @@ export default function PostComponent(props) {
       Authorization: `Bearer ${token}`
     }
   };
-  
+
   const inputRef = useRef();
   Modal.setAppElement("#root");
 
@@ -38,23 +40,26 @@ export default function PostComponent(props) {
   const [newDescription, setNewDescription] = useState(post.description);
   const [isOpen, setIsOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [isOpenRepost, setIsOpenRepost] = useState(false);
+  const [repostsCount, setRepostsCount] = useState(post.reposts);
+  const [reposting, setReposting] = useState(false);
 
   const [liked, setLiked] = useState(false);
   const [count, setCount] = useState(0);
   const [text, setText] = useState(null);
 
   const [inputComment, setInputComment] = useState('');
-  const [showComment,setShowComment] = useState(false);
+  const [showComment, setShowComment] = useState(false);
   const [userPicture, setUserPicture] = useState('');
   const [qtyPosts, setQtyPosts] = useState(0);
-  
+
 
   let countNotState = '';
 
   function getHashtags(description) {
 
-    if ( description === null || description === undefined ) return '';
-    
+    if (description === null || description === undefined) return '';
+
     let palavra = "";
     let aux = 0;
     const hashtagPositions = [];
@@ -62,7 +67,7 @@ export default function PostComponent(props) {
     for (let i = 0; i < description.length; i++) {
       palavra = '';
       for (let j = i + 1; j < description.length; j++) {
-        if (description[i]==='#' && description[j]!=='#' && description[j]!==' ') {
+        if (description[i] === '#' && description[j] !== '#' && description[j] !== ' ') {
           palavra += description[j];
         } else {
           break;
@@ -82,33 +87,33 @@ export default function PostComponent(props) {
     for (let i = 0; i < hashtagPositions.length; i++) {
 
       if (i === 0) {
- 
+
         if (description.substring(0, hashtagPositions[i])[0] === "#") {
-          frase_final += createLink(description.substring(0, hashtagPositions[i]) )
+          frase_final += createLink(description.substring(0, hashtagPositions[i]))
         } else {
           frase_final += description.substring(0, hashtagPositions[i])
         }
 
-        if ( description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#" ) {
-          frase_final += createLink ( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
+        if (description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#") {
+          frase_final += createLink(description.substring(hashtagPositions[i], hashtagPositions[i + 1]))
         } else {
-          frase_final += description.substring( hashtagPositions[i], hashtagPositions[i + 1] );
+          frase_final += description.substring(hashtagPositions[i], hashtagPositions[i + 1]);
         }
 
       } else if (i === hashtagPositions.length - 1) {
-        frase_final +=  createLink( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
+        frase_final += createLink(description.substring(hashtagPositions[i], hashtagPositions[i + 1]))
 
       } else {
-        if ( description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#" ) {
-          frase_final += createLink( description.substring(hashtagPositions[i], hashtagPositions[i + 1]) )
+        if (description.substring(hashtagPositions[i], hashtagPositions[i + 1])[0] === "#") {
+          frase_final += createLink(description.substring(hashtagPositions[i], hashtagPositions[i + 1]))
         } else {
-          frase_final += description.substring( hashtagPositions[i],  hashtagPositions[i + 1] )
+          frase_final += description.substring(hashtagPositions[i], hashtagPositions[i + 1])
         }
 
-        if ( frase.substring( hashtagPositions[i + 1], hashtagPositions[i + 2]  )[0] === "#"  ) {
-          frase_final += createLink( frase.substring(hashtagPositions[i + 1], hashtagPositions[i + 2]) )
+        if (frase.substring(hashtagPositions[i + 1], hashtagPositions[i + 2])[0] === "#") {
+          frase_final += createLink(frase.substring(hashtagPositions[i + 1], hashtagPositions[i + 2]))
         } else {
-          frase_final += frase.substring( hashtagPositions[i + 1], hashtagPositions[i + 2] );
+          frase_final += frase.substring(hashtagPositions[i + 1], hashtagPositions[i + 2]);
         }
 
         i++;
@@ -117,9 +122,9 @@ export default function PostComponent(props) {
     return frase_final;
   }
 
-  function createLink(hash){
-    let hashtag = hash.replace('#','').trim();
-    return  '<a href="/hashtag/'+hashtag+'"> <strong>' + hash +'</strong> </a>'
+  function createLink(hash) {
+    let hashtag = hash.replace('#', '').trim();
+    return '<a href="/hashtag/' + hashtag + '"> <strong>' + hash + '</strong> </a>'
   }
 
   function countLikes(likes, countNotState) {
@@ -210,25 +215,25 @@ export default function PostComponent(props) {
     setIsOpen(!isOpen);
   }
 
+  function toggleModalRepost() {
+    setIsOpenRepost(!isOpenRepost);
+  }
+
   useEffect(() => {
-    // console.log(inputRef.current)
     if (inputRef.current) {
       inputRef.current.focus();
 
       const keyDownHandler = event => {
-        // console.log('User pressed: ', event.key);
 
         if (event.key === 'Escape') {
           event.preventDefault();
 
-          // 👇️ your logic here
           escPressed();
         }
       };
 
       document.addEventListener('keydown', keyDownHandler);
 
-      // 👇️ clean up event listener
       return () => {
         document.removeEventListener('keydown', keyDownHandler);
       };
@@ -238,11 +243,9 @@ export default function PostComponent(props) {
   const escPressed = () => {
     setEditing(false);
     setNewDescription(originalDescription);
-    // console.log('pressed Esc ✅');
   };
 
   function editPost(postId) {
-    // console.log(`Edit post: ${postId}`);
 
     if (!editing) {
       setEditing(true);
@@ -256,12 +259,9 @@ export default function PostComponent(props) {
     e.preventDefault();
     setEnableEdit(false);
     const metaNewDescription = { description: newDescription };
-    // console.log(`${URL_API}/posts/${post.postId}`, metaNewDescription, config)
     const promise = axios.put(`${URL_API}/posts/${post.postId}`, metaNewDescription, config);
     promise.then(response => {
-      console.log(response.data);
       setOriginalDescription(metaNewDescription.description);
-      // setEdited(true);
       setEditing(false);
       setEnableEdit(true);
     });
@@ -276,13 +276,11 @@ export default function PostComponent(props) {
     setDeleting(true);
     const promise = axios.delete(`${URL_API}/posts/${post.postId}`, config);
     promise.then(response => {
-      console.log(response.data);
       setDeleting(false);
       toggleModal();
       setDeleted(true);
     });
     promise.catch(error => {
-      console.log(error.response.data);
       setDeleting(false);
       toggleModal();
       alert("Não foi possível excluir o post");
@@ -290,7 +288,7 @@ export default function PostComponent(props) {
   }
 
   function handleCommentClick() {
-  
+
     const URL = `${URL_API}/comment`;
     const CONFIG = {
       headers: {
@@ -321,21 +319,36 @@ export default function PostComponent(props) {
       },
     };
 
-    function getPicture(){
+    function getPicture() {
       const URL = `${URL_API}/picture/user`;
       const promise = axios.get(URL, config);
       promise.then(response => setUserPicture(response.data.pictureUrl));
       promise.catch(err => console.log(err.response));
     }
-    
-    function getQtdPosts(){
+
+    function getQtdPosts() {
       const URL = `${URL_API}/comment/qty/${post.postId}`;
       const promise = axios.get(URL, config);
       promise.then(response => setQtyPosts(response.data.quantity));
       promise.catch(err => console.log(err.response));
     }
 
-  },[token,qtyPosts]);
+  }, [token, qtyPosts]);
+
+  function sendRepost() {
+    setReposting(true);
+    const promise = axios.post(`${URL_API}/reposts`, { postId: post.postId }, config);
+    promise.then(response => {
+      setReposting(false);
+      toggleModalRepost();
+      setRepostsCount(repostsCount + 1);
+    });
+    promise.catch(error => {
+      setReposting(false);
+      toggleModalRepost();
+      alert("Não foi repostar o post");
+    });
+  }
 
   return (
 
@@ -353,20 +366,48 @@ export default function PostComponent(props) {
                 {text}
               </ReactTooltip> :
               <></>}
-          <IconRightComment>
-            <AiOutlineComment onClick={toggleShowComment}/>
-            <p>{qtyPosts} comments</p>
-          </IconRightComment>
+            <IconRightComment>
+              <AiOutlineComment onClick={toggleShowComment} />
+              <p>{qtyPosts} comments</p>
+            </IconRightComment>
+            <IconRightComment>
+              <BiRepost onClick={() => {
+                toggleModalRepost();
+              }} />
+              <p onClick={toggleModalRepost}>{parseInt(repostsCount)} re-posts</p>
+              <Modal
+                isOpen={isOpenRepost}
+                onRequestClose={toggleModalRepost}
+                className="_"
+                overlayClassName="_"
+                contentElement={(props, children) => (
+                  <ModalStyle {...props}>{children}</ModalStyle>
+                )}
+                overlayElement={(props, contentElement) => (
+                  <OverlayStyle {...props}>{contentElement}</OverlayStyle>
+                )}
+              >
+                {
+                  !reposting ?
+                    <>
+                      <h1>Do you want do re-post this link?</h1>
+                      <div>
+                        <CancelDelete onClick={toggleModalRepost}>No, cancel</CancelDelete>
+                        <ConfirmDelete onClick={sendRepost}>Yes, share!</ConfirmDelete>
+                      </div>
+                    </>
+                    :
+                    <h1>LOADING</h1>
+                }
+              </Modal>
+            </IconRightComment>
           </PostLeftSide>
           <PostRightSide>
             {
               post.userId === decoded.id ?
                 <>
                   <EditIcon onClick={() => editPost(post.postId)}><IoMdCreate /></EditIcon>
-                  <DeleteIcon onClick={() => {
-                    // deletePost(post.postId);
-                    toggleModal();
-                  }}><IoMdTrash /></DeleteIcon>
+                  <DeleteIcon onClick={toggleModal}><IoMdTrash /></DeleteIcon>
                   <Modal
                     isOpen={isOpen}
                     onRequestClose={toggleModal}
@@ -378,20 +419,18 @@ export default function PostComponent(props) {
                     overlayElement={(props, contentElement) => (
                       <OverlayStyle {...props}>{contentElement}</OverlayStyle>
                     )}
-                  // shouldCloseOnEsc={false}
-                  // shouldCloseOnOverlayClick={false}
                   >
                     {
-                      !deleting ? 
-                      <>
-                        <h1>Are you sure you want to delete this post?</h1>
-                        <div>
-                          <CancelDelete onClick={toggleModal}>No, go back</CancelDelete>
-                          <ConfirmDelete onClick={sendDeletePost}>Yes, delete it</ConfirmDelete>
-                        </div>
-                      </>
-                      :
-                      <h1>LOADING</h1>
+                      !deleting ?
+                        <>
+                          <h1>Are you sure you want to delete this post?</h1>
+                          <div>
+                            <CancelDelete onClick={toggleModal}>No, go back</CancelDelete>
+                            <ConfirmDelete onClick={sendDeletePost}>Yes, delete it</ConfirmDelete>
+                          </div>
+                        </>
+                        :
+                        <h1>LOADING</h1>
                     }
                   </Modal>
                 </>
@@ -436,10 +475,10 @@ export default function PostComponent(props) {
             </a>
           </PostRightSide>
         </Post>
-        {showComment && 
+        {showComment &&
           <Comment>
-            <AvatarComment src={userPicture} alt='Avatar'/>
-            <InputComment placeholder='write a comment...' onChange={(e) => setInputComment(e.target.value)}/>
+            <AvatarComment src={userPicture} alt='Avatar' />
+            <InputComment placeholder='write a comment...' onChange={(e) => setInputComment(e.target.value)} />
             <IconComment onClick={handleCommentClick}><FiSend /></IconComment>
           </Comment>
         }
@@ -461,7 +500,7 @@ const ModalStyle = styled.div`
   height: 262px;
   align-items: center;
   h1 {
-    width: 350px;
+    width: 370px;
     margin-top: 38px;
     text-align: center;
     font-family: Lato;
@@ -715,13 +754,13 @@ img {
 }
 `
 
-const ColorComment = styled.div `
+const ColorComment = styled.div`
   background-color: #1E1E1E;
   border-radius: 16px;
   border-radius: 16px;
 `
 
-const Comment = styled.div `
+const Comment = styled.div`
   width: 100%;
   height: 83px;
   background-color: #1E1E1E;
