@@ -304,6 +304,7 @@ export default function PostComponent(props) {
     promise.then((promise) => {
       setShowComment(false);
       setInputComment('');
+      getQtdPosts();
     });
     promise.catch((err) => console.log(err.response));
   }
@@ -312,28 +313,36 @@ export default function PostComponent(props) {
     setShowComment(!showComment);
   }
 
-  useEffect(() => {
+  function getQtdPosts(){
+    const URL = `${URL_API}/comment/qty/${post.postId}`;
     const CONFIG = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     };
+    const promise = axios.get(URL, config);
+    promise.then(response => {
+      console.log(response.data);
+      setQtyPosts(response.data.quantity)
+    });
+    promise.catch(err => console.log(err.response));
+  }
 
-    function getPicture() {
-      const URL = `${URL_API}/picture/user`;
-      const promise = axios.get(URL, config);
-      promise.then(response => setUserPicture(response.data.pictureUrl));
-      promise.catch(err => console.log(err.response));
-    }
+  function getPicture(){
+    const CONFIG = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const URL = `${URL_API}/picture/user`;
+    const promise = axios.get(URL, config);
+    promise.then(response => setUserPicture(response.data.pictureUrl));
+    promise.catch(err => console.log(err.response));
+  }
 
-    function getQtdPosts() {
-      const URL = `${URL_API}/comment/qty/${post.postId}`;
-      const promise = axios.get(URL, config);
-      promise.then(response => setQtyPosts(response.data.quantity));
-      promise.catch(err => console.log(err.response));
-    }
-
-  }, [token, qtyPosts]);
+  useEffect(() => {
+    getPicture();
+  },[showComment]);
 
   function sendRepost() {
     setReposting(true);

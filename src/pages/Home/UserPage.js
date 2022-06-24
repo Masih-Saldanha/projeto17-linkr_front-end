@@ -186,4 +186,8 @@ color: ${props => props.following === true ? '#1877F2' : 'white'};
 @media (min-width: 750px) {
     display: none;
 }
+
+&:disabled {
+    opacity: 0.5;
+}
 `

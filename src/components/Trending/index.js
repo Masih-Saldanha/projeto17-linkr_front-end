@@ -18,12 +18,12 @@ function Trending({isUserPage, isFollower, callbackIsFollower, userPageId}) {
     },
   };
 
-    const URL = "https://projeto17-linkr.herokuapp.com/hashtag/trending";
-    const URL_FOLLOW = 'http://localhost:4000';
+    const URL = "https://projeto17-linkr.herokuapp.com";
+    // const URL = 'http://localhost:4000';
 
   useEffect(() => {
 
-    const promise = axios.get(URL, CONFIG);
+    const promise = axios.get(`${URL}/hashtag/trending`, CONFIG);
 
     promise.then((promise) => {
       setHashtags([...promise.data]);
@@ -35,7 +35,7 @@ function Trending({isUserPage, isFollower, callbackIsFollower, userPageId}) {
     setLoadingButton(true);
 
     if (!followingAlready) {
-        const promise = axios.post(`${URL_FOLLOW}/follow`, {followedId, followerId}, CONFIG);
+        const promise = axios.post(`${URL}/follow`, {followedId, followerId}, CONFIG);
         promise.then(() => {
             setLoadingButton(false);
             callbackIsFollower(true);
@@ -45,7 +45,7 @@ function Trending({isUserPage, isFollower, callbackIsFollower, userPageId}) {
             alert('Não foi possível completar o seu follow');
         })
     } else {
-        const promise = axios.post(`${URL_FOLLOW}/unfollow`, {followedId, followerId}, CONFIG);
+        const promise = axios.post(`${URL}/unfollow`, {followedId, followerId}, CONFIG);
         promise.then(() => {
             setLoadingButton(false);
             callbackIsFollower(false);
@@ -114,6 +114,10 @@ color: ${props => props.following === true ? '#1877F2' : 'white'};
 
 &:hover {
     cursor: pointer;
+}
+
+&:disabled {
+    opacity: 0.5;
 }
 `;
 
